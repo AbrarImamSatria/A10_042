@@ -15,23 +15,81 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.R
 import com.example.perkebunan.model.Tanaman
+import com.example.perkebunan.navigation.DestinasiNavigasi
+import com.example.perkebunan.ui.PenyediaViewModel
+import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
 import com.example.perkebunan.ui.viewmodel.tanaman.HomeTanamanUiState
+import com.example.perkebunan.ui.viewmodel.tanaman.HomeTanamanViewModel
+
+object DestinasiHomeTanaman: DestinasiNavigasi {
+    override val route = "home"
+    override val titleRes = "Home Tnm"
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeTanamanScreen(
+    navigateToItemEntry: () -> Unit,
+    modifier: Modifier = Modifier,
+    onDetailClick: (String) -> Unit = {},
+    viewModel: HomeTanamanViewModel = viewModel(factory = PenyediaViewModel.Factory)
+){
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    Scaffold (
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CostumeTopAppBar(
+                title = DestinasiHomeTanaman.titleRes,
+                canNavigateBack = false,
+                scrollBehavior = scrollBehavior,
+                onRefresh = {
+                    viewModel.getTnm()
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = navigateToItemEntry,
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.padding(18.dp)
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Kontak")
+            }
+        }
+    ){innerPadding ->
+        HomeTanamanStatus(
+            homeTanamanUiState = viewModel.tnmUiState,
+            retryAction = {viewModel.getTnm()}, modifier = Modifier.padding(innerPadding),
+            onDetailClick = onDetailClick, onDeleteClick = {
+                viewModel.deleteTnm(it.idTanaman)
+                viewModel.getTnm()
+            }
+        )
+    }
+}
 
 @Composable
 fun HomeTanamanStatus(
