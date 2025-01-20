@@ -46,7 +46,7 @@ import com.example.perkebunan.ui.viewmodel.tanaman.HomeTanamanViewModel
 
 object DestinasiHomeTanaman: DestinasiNavigasi {
     override val route = "home"
-    override val titleRes = "Home Tnm"
+    override val titleRes = "Home Tanaman"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

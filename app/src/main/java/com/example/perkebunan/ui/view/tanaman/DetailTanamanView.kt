@@ -75,7 +75,7 @@ fun DetailScreenTanaman(
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit Mahasiswa"
+                    contentDescription = "Edit Tanaman"
                 )
             }
         }

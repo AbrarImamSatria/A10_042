@@ -32,8 +32,8 @@ import com.example.perkebunan.ui.viewmodel.tanaman.UpdateTanamanViewModel
 import kotlinx.coroutines.launch
 
 object DestinasiEditTanaman : DestinasiNavigasi {
-    override val route = "item_edit"
-    override val titleRes = "Edit Tnm"
+    override val route = "item_edit/{idTanaman}"
+    override val titleRes = "Edit Tanaman"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -131,24 +131,24 @@ fun FormInputTanamanEdit(
         )
         OutlinedTextField(
             value = updateTanamanUiEvent.namaTanaman,
-            onValueChange = { onValueChange(updateTanamanUiEvent.copy(idTanaman = it)) },
-            label = { Text("ID Tanaman") },
+            onValueChange = { onValueChange(updateTanamanUiEvent.copy(namaTanaman = it)) },
+            label = { Text("Nama Tanaman") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true
         )
         OutlinedTextField(
             value = updateTanamanUiEvent.periodeTanam,
-            onValueChange = { onValueChange(updateTanamanUiEvent.copy(idTanaman = it)) },
-            label = { Text("ID Tanaman") },
+            onValueChange = { onValueChange(updateTanamanUiEvent.copy(periodeTanam = it)) },
+            label = { Text("Periode Tanaman") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true
         )
         OutlinedTextField(
             value = updateTanamanUiEvent.deskripsiTanaman,
-            onValueChange = { onValueChange(updateTanamanUiEvent.copy(idTanaman = it)) },
-            label = { Text("ID Tanaman") },
+            onValueChange = { onValueChange(updateTanamanUiEvent.copy(periodeTanam = it)) },
+            label = { Text("Periode Tanaman") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true
