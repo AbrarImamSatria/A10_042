@@ -31,6 +31,39 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.perkebunan.R
 import com.example.perkebunan.model.Tanaman
+import com.example.perkebunan.ui.viewmodel.tanaman.HomeTanamanUiState
+
+@Composable
+fun HomeTanamanStatus(
+    homeTanamanUiState: HomeTanamanUiState,
+    retryAction: () -> Unit,
+    modifier: Modifier = Modifier,
+    onDeleteClick: (Tanaman) -> Unit = {},
+    onDetailClick: (String) -> Unit
+){
+    when (homeTanamanUiState){
+        is HomeTanamanUiState.Loading -> OnLoading(modifier = modifier.fillMaxSize())
+
+        is HomeTanamanUiState.Succes ->
+            if (homeTanamanUiState.tanaman.isEmpty()){
+                return Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                    Text(text = "Tidak ada data Kontak")
+                }
+            }else{
+                TnmLayout(
+
+                    tanaman = homeTanamanUiState.tanaman, modifier = modifier.fillMaxWidth(),
+                    onDetailClick = {
+                        onDetailClick(it.idTanaman)
+                    },
+                    onDeleteClick = {
+                        onDeleteClick(it)
+                    }
+                )
+            }
+        is HomeTanamanUiState.Error -> OnError(retryAction, modifier = modifier.fillMaxSize())
+    }
+}
 
 /**
  * The home sceen displaying the loading message.
