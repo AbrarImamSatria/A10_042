@@ -22,7 +22,6 @@ import com.example.perkebunan.R
 fun CustomTopBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    onRefresh: () -> Unit,
     onNotificationClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
@@ -34,6 +33,7 @@ fun CustomTopBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 30.dp)
+                .padding(bottom = 15.dp)
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Row(
@@ -138,19 +138,6 @@ fun CustomTopBar(
                         )
                     }
                 }
-            }
-
-            IconButton(
-                onClick = onRefresh,
-                modifier = Modifier
-                    .align(Alignment.End)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Refresh,
-                    contentDescription = "Refresh",
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
-                )
             }
         }
     }

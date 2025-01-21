@@ -122,14 +122,6 @@ fun FormInputTanamanEdit(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         OutlinedTextField(
-            value = updateTanamanUiEvent.idTanaman,
-            onValueChange = { onValueChange(updateTanamanUiEvent.copy(idTanaman = it)) },
-            label = { Text("ID Tanaman") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true
-        )
-        OutlinedTextField(
             value = updateTanamanUiEvent.namaTanaman,
             onValueChange = { onValueChange(updateTanamanUiEvent.copy(namaTanaman = it)) },
             label = { Text("Nama Tanaman") },
@@ -147,8 +139,8 @@ fun FormInputTanamanEdit(
         )
         OutlinedTextField(
             value = updateTanamanUiEvent.deskripsiTanaman,
-            onValueChange = { onValueChange(updateTanamanUiEvent.copy(periodeTanam = it)) },
-            label = { Text("Periode Tanaman") },
+            onValueChange = { onValueChange(updateTanamanUiEvent.copy(deskripsiTanaman = it)) },
+            label = { Text("Deskripsi Tanaman") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true
