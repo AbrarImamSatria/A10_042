@@ -29,6 +29,6 @@ interface PekerjaService {
     @PUT("editpekerja.php/{id_pekerja}")
     suspend fun updatePekerja(@Query("id_pekeja")idpekerja:String, @Body pekerja: Pekerja)
 
-    @DELETE("deletetpekerja.php/{id_pekerja}")
+    @DELETE("deletepekerja.php/{id_pekerja}")
     suspend fun deletePekerja(@Query("id_pekerja") idPekerja:String): Response<Void>
 }
