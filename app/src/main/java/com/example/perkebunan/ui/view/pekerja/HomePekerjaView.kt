@@ -46,6 +46,47 @@ import com.example.perkebunan.ui.viewmodel.pekerja.HomePekerjaUiState
 import com.example.perkebunan.ui.viewmodel.tanaman.HomeTanamanUiState
 
 @Composable
+fun PemanisSection(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF00A67E), shape = MaterialTheme.shapes.medium)
+                .padding(vertical = 10.dp, horizontal = 12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.partners),
+                    contentDescription = "Icon",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(end = 12.dp)
+                )
+                Text(
+                    text = "Bekerja dengan Semangat\nMenuju Sukses Bersama.",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.padding(start = 12.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun HomePekerjaStatus(
     homePekerjaUiState: HomePekerjaUiState,
     retryAction: () -> Unit,
