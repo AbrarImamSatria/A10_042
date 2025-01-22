@@ -24,29 +24,107 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.R
 import com.example.perkebunan.model.Pekerja
-import com.example.perkebunan.model.Tanaman
-import com.example.perkebunan.ui.view.tanaman.TnmCard
-import com.example.perkebunan.ui.view.tanaman.TnmLayout
+import com.example.perkebunan.navigation.DestinasiNavigasi
+import com.example.perkebunan.ui.PenyediaViewModel
+import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
 import com.example.perkebunan.ui.viewmodel.pekerja.HomePekerjaUiState
-import com.example.perkebunan.ui.viewmodel.tanaman.HomeTanamanUiState
+import com.example.perkebunan.ui.viewmodel.pekerja.HomePekerjaViewModel
+
+object DestinasiHomePekerja: DestinasiNavigasi {
+    override val route = "home pekerja"
+    override val titleRes = "Manajemen Pekerja"
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomePekerjaScreen(
+    navigateToItemEntry: () -> Unit,
+    navigateBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    onDetailClick: (String) -> Unit = {},
+    viewModel: HomePekerjaViewModel = viewModel(factory = PenyediaViewModel.Factory)
+) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var selectedPekerja by remember { mutableStateOf<Pekerja?>(null) }
+
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CostumeTopAppBar(
+                title = DestinasiHomePekerja.titleRes,
+                canNavigateBack = true,
+                scrollBehavior = scrollBehavior,
+                navigateUp = navigateBack,
+                onRefresh = { viewModel.getPkj() },
+            )
+        },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
+
+            PemanisSectionPekerja()
+            DaftarPekerjaHeader(
+                onTambahPekerjaClick = navigateToItemEntry
+            )
+
+            HomePekerjaStatus(
+                homePekerjaUiState = viewModel.pkjUiState,
+                retryAction = { viewModel.getPkj() },
+                onDetailClick = onDetailClick,
+                onDeleteClick = { pekerja ->
+                    selectedPekerja = pekerja
+                    showDeleteDialog = true
+                }
+            )
+        }
+
+        if (showDeleteDialog) {
+            DeleteConfirmationDialog(
+                onDeleteConfirm = {
+                    selectedPekerja?.let { pekerja ->
+                        viewModel.deletePkj(pekerja.idPekerja)
+                        viewModel.getPkj()
+                    }
+                    showDeleteDialog = false
+                },
+                onDeleteCancel = {
+                    showDeleteDialog = false
+                }
+            )
+        }
+    }
+}
 
 @Composable
-fun PemanisSection(
+fun PemanisSectionPekerja(
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -74,7 +152,7 @@ fun PemanisSection(
                         .padding(end = 12.dp)
                 )
                 Text(
-                    text = "Bekerja dengan Semangat\nMenuju Sukses Bersama.",
+                    text = "Bekerja dengan Semangat,\nMenuju Sukses Bersama.",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = Color.White,
                         fontWeight = FontWeight.Bold
