@@ -41,6 +41,44 @@ import com.example.perkebunan.R
 import com.example.perkebunan.model.Pekerja
 import com.example.perkebunan.model.Tanaman
 import com.example.perkebunan.ui.view.tanaman.TnmCard
+import com.example.perkebunan.ui.view.tanaman.TnmLayout
+import com.example.perkebunan.ui.viewmodel.pekerja.HomePekerjaUiState
+import com.example.perkebunan.ui.viewmodel.tanaman.HomeTanamanUiState
+
+@Composable
+fun HomePekerjaStatus(
+    homePekerjaUiState: HomePekerjaUiState,
+    retryAction: () -> Unit,
+    modifier: Modifier = Modifier,
+    onDeleteClick: (Pekerja) -> Unit = {},
+    onDetailClick: (String) -> Unit
+){
+    when (homePekerjaUiState){
+        is HomePekerjaUiState.Loading -> OnLoading(modifier = modifier.fillMaxSize())
+
+        is HomePekerjaUiState.Succes ->
+            if (homePekerjaUiState.pekerja.isEmpty()){
+                return Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                    Text(text = "Tidak ada data Pekerja")
+                }
+            }else{
+                PkjLayout(
+
+                    pekerja = homePekerjaUiState.pekerja, modifier = modifier.fillMaxWidth(),
+                    onDetailClick = {
+                        onDetailClick(it.idPekerja)
+                    },
+                    onDeleteClick = {
+                        onDeleteClick(it)
+                    }
+                )
+            }
+        is HomePekerjaUiState.Error -> OnError(
+            retryAction,
+            modifier = modifier.fillMaxSize()
+        )
+    }
+}
 
 /**
  * The home sceen displaying the loading message.
