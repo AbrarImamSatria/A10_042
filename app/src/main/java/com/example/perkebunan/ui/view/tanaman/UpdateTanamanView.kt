@@ -34,8 +34,9 @@ import com.example.perkebunan.ui.viewmodel.tanaman.UpdateTanamanViewModel
 import kotlinx.coroutines.launch
 
 object DestinasiEditTanaman : DestinasiNavigasi {
-    override val route = "item_edit/{idTanaman}"
+    override val route = "tanaman_edit/{idTanaman}"
     override val titleRes = "Edit Tanaman"
+    const val idTanamanArg = "idTanaman"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

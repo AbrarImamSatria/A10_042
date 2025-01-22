@@ -50,8 +50,9 @@ import com.example.perkebunan.ui.viewmodel.tanaman.DetailTanamanUiState
 import com.example.perkebunan.ui.viewmodel.tanaman.DetailTanamanViewModel
 
 object DestinasiDetailTanaman : DestinasiNavigasi {
-    override val route = "detail/{idTanaman}"
+    override val route = "tanaman_detail/{idTanaman}"
     override val titleRes = "Detail Tanaman"
+    const val idTanamanArg = "idTanaman"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -177,9 +178,9 @@ fun DetailTanamanLayout(
                         .padding(bottom = 8.dp)
                 )
 
-                DetailItem(label = "Nama Tanaman :", value = tanaman.namaTanaman)
-                Divider(color = MaterialTheme.colorScheme.surfaceVariant)
                 DetailItem(label = "ID Tanaman :", value = tanaman.idTanaman)
+                Divider(color = MaterialTheme.colorScheme.surfaceVariant)
+                DetailItem(label = "Nama Tanaman :", value = tanaman.namaTanaman)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
                 DetailItem(label = "Periode Tanam :", value = tanaman.periodeTanam)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)

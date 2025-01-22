@@ -69,6 +69,7 @@ object DestinasiHomeTanaman: DestinasiNavigasi {
 @Composable
 fun HomeTanamanScreen(
     navigateToItemEntry: () -> Unit,
+    navigateToPekerja: () -> Unit,
     modifier: Modifier = Modifier,
     onDetailClick: (String) -> Unit = {},
     viewModel: HomeTanamanViewModel = viewModel(factory = PenyediaViewModel.Factory)
@@ -92,7 +93,7 @@ fun HomeTanamanScreen(
                 .fillMaxSize()
         ) {
             FiturLainnyaSection(
-                navigateToPekerja = { /* Navigasi ke halaman pekerja */ },
+                navigateToPekerja = navigateToPekerja,
                 navigateToCatatan = { /* Navigasi ke halaman catatan */ },
                 navigateToAktivitas = { /* Navigasi ke halaman aktivitas */ },
                 onRefresh = { viewModel.getTnm() },
@@ -465,16 +466,12 @@ fun TnmCard(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "ID ${tanaman.idTanaman}",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
-                )
-                Text(
                     text = tanaman.namaTanaman,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp)
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 )
                 Text(
                     text = tanaman.periodeTanam,
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
+                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray,fontWeight = FontWeight.Bold)
                 )
             }
 
