@@ -362,11 +362,11 @@ fun PkjCard(
             ) {
                 Text(
                     text = pekerja.namaPekerja,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp)
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 )
                 Text(
-                    text = pekerja.kontakPekerja,
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
+                    text = pekerja.jabatan,
+                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray,fontWeight = FontWeight.Bold)
                 )
             }
 

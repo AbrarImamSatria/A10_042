@@ -24,7 +24,7 @@ class DetailPekerjaViewModel(private val pkjRepository: PekerjaRepository) : Vie
     var pkjDetailUiState: DetailPekerjaUiState by mutableStateOf(DetailPekerjaUiState.Loading)
         private set
 
-    fun getTanamanbyIdPekerja(idPekerja: String) {
+    fun getPekerjabyIdPekerja(idPekerja: String) {
         viewModelScope.launch {
             pkjDetailUiState = DetailPekerjaUiState.Loading
             pkjDetailUiState = try {

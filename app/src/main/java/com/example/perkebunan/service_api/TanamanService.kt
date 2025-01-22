@@ -27,7 +27,7 @@ interface TanamanService {
     suspend fun getTanamanbyIdTanaman(@Query("id_tanaman") idtanaman:String):Tanaman
 
     @PUT("edittanaman.php/{id_tanaman}")
-    suspend fun updateTanaman(@Query("id_tanaman")idtanaman:String, @Body tanaman: Tanaman)
+    suspend fun updateTanaman(@Query("id_tanaman")idTanaman:String, @Body tanaman: Tanaman)
 
     @DELETE("deletetanaman.php/{id_tanaman}")
     suspend fun deleteTanaman(@Query("id_tanaman") idTanaman:String): Response<Void>

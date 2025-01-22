@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 
 object DestinasiEditPekerja : DestinasiNavigasi {
     override val route = "Pekerja_edit/{idPekerja}"
-    override val titleRes = "Edit Pekerjan"
+    override val titleRes = "Edit Pekerja"
     const val idPekerjaArg = "idPekerja"
 }
 
@@ -127,7 +127,7 @@ fun FormInputPekerjaEdit(
         OutlinedTextField(
             value = updatePekerjaUiEvent.namaPekerja,
             onValueChange = { onValueChange(updatePekerjaUiEvent.copy(namaPekerja = it)) },
-            label = { Text("Nama Pekerjan") },
+            label = { Text("Nama Pekerja") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true
