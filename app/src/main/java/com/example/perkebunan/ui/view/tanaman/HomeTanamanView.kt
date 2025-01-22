@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -33,8 +34,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -68,6 +74,9 @@ fun HomeTanamanScreen(
     viewModel: HomeTanamanViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var selectedTanaman by remember { mutableStateOf<Tanaman?>(null) }
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -98,14 +107,30 @@ fun HomeTanamanScreen(
                 homeTanamanUiState = viewModel.tnmUiState,
                 retryAction = { viewModel.getTnm() },
                 onDetailClick = onDetailClick,
-                onDeleteClick = {
-                    viewModel.deleteTnm(it.idTanaman)
-                    viewModel.getTnm()
+                onDeleteClick = { tanaman ->
+                    selectedTanaman = tanaman
+                    showDeleteDialog = true
+                }
+            )
+        }
+
+        if (showDeleteDialog) {
+            DeleteConfirmationDialog(
+                onDeleteConfirm = {
+                    selectedTanaman?.let { tanaman ->
+                        viewModel.deleteTnm(tanaman.idTanaman)
+                        viewModel.getTnm()
+                    }
+                    showDeleteDialog = false
+                },
+                onDeleteCancel = {
+                    showDeleteDialog = false
                 }
             )
         }
     }
 }
+
 
 
 @Composable
@@ -257,7 +282,7 @@ fun HomeTanamanStatus(
         is HomeTanamanUiState.Succes ->
             if (homeTanamanUiState.tanaman.isEmpty()){
                 return Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                    Text(text = "Tidak ada data Kontak")
+                    Text(text = "Tidak ada data Tanaman")
                 }
             }else{
                 TnmLayout(
@@ -474,4 +499,24 @@ fun TnmCard(
             }
         }
     }
+}
+
+@Composable
+private fun DeleteConfirmationDialog(
+    onDeleteConfirm: () -> Unit, onDeleteCancel: () -> Unit, modifier: Modifier = Modifier
+) {
+    AlertDialog(onDismissRequest = {/*Do Nothing*/},
+        title = { Text("Delete Data") },
+        text = { Text("Apakah anda yakin ingin menghapus data?") },
+        modifier = modifier,
+        dismissButton = {
+            TextButton(onClick = onDeleteCancel) {
+                Text(text = "Cancel")
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDeleteConfirm) {
+                Text(text = "Yes")
+            }
+        })
 }
