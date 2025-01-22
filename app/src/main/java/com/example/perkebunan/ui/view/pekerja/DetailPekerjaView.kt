@@ -14,21 +14,72 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.R
 import com.example.perkebunan.model.Pekerja
-import com.example.perkebunan.ui.view.tanaman.DetailTanamanLayout
+import com.example.perkebunan.navigation.DestinasiNavigasi
+import com.example.perkebunan.ui.PenyediaViewModel
+import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
 import com.example.perkebunan.ui.viewmodel.pekerja.DetailPekerjaUiState
-import com.example.perkebunan.ui.viewmodel.tanaman.DetailTanamanUiState
+import com.example.perkebunan.ui.viewmodel.pekerja.DetailPekerjaViewModel
+
+object DestinasiDetailPekerja : DestinasiNavigasi {
+    override val route = "pekerja_detail/{idPekerja}"
+    override val titleRes = "Detail Pekerja"
+    const val idPekerjaArg = "idPekerja"
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DetailScreenPekerja(
+    navigateBack: () -> Unit,
+    navigateToEdit: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    idPekerja: String,
+    viewModel: DetailPekerjaViewModel = viewModel(factory = PenyediaViewModel.Factory)
+) {
+    LaunchedEffect(idPekerja) {
+        viewModel.getPekerjabyIdPekerja(idPekerja)
+    }
+
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CostumeTopAppBar(
+                title = DestinasiDetailPekerja.titleRes,
+                canNavigateBack = true,
+                scrollBehavior = scrollBehavior,
+                navigateUp = navigateBack,
+                onRefresh = { viewModel.getPekerjabyIdPekerja(idPekerja) },
+            )
+        },
+    ) { innerPadding ->
+        DetailPekerjaStatus(
+            detailPekerjaUiState = viewModel.pkjDetailUiState,
+            retryAction = { viewModel.getPekerjabyIdPekerja(idPekerja) },
+            navigateToEdit = navigateToEdit,
+            idPekerja = idPekerja,
+            modifier = Modifier.padding(innerPadding)
+        )
+    }
+}
 
 @Composable
 private fun DetailPekerjaStatus(
