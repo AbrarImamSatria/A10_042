@@ -3,6 +3,7 @@ package com.example.perkebunan.ui.view.pekerja
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,6 +26,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.perkebunan.R
 import com.example.perkebunan.model.Pekerja
+import com.example.perkebunan.ui.view.tanaman.DetailTanamanLayout
+import com.example.perkebunan.ui.viewmodel.pekerja.DetailPekerjaUiState
+import com.example.perkebunan.ui.viewmodel.tanaman.DetailTanamanUiState
+
+@Composable
+private fun DetailPekerjaStatus(
+    detailPekerjaUiState: DetailPekerjaUiState,
+    retryAction: () -> Unit,
+    navigateToEdit: (String) -> Unit,
+    idPekerja: String,
+    modifier: Modifier = Modifier
+) {
+    when (detailPekerjaUiState) {
+        is DetailPekerjaUiState.Loading -> OnLoadingDetail(
+            modifier = modifier.fillMaxSize()
+        )
+        is DetailPekerjaUiState.Success -> DetailPekerjaLayout(
+            pekerja = detailPekerjaUiState.pekerja,
+            navigateToEdit = navigateToEdit,
+            idPekerja = idPekerja,
+            modifier = modifier.fillMaxWidth()
+        )
+        is DetailPekerjaUiState.Error -> OnErrorDetail(
+            retryAction,
+            modifier = modifier.fillMaxSize()
+        )
+    }
+}
 
 @Composable
 private fun OnErrorDetail(retryAction: () -> Unit, modifier: Modifier = Modifier) {
