@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.perkebunan.PerkebunanApplications
+import com.example.perkebunan.ui.viewmodel.pekerja.HomePekerjaViewModel
 import com.example.perkebunan.ui.viewmodel.tanaman.DetailTanamanViewModel
 import com.example.perkebunan.ui.viewmodel.tanaman.HomeTanamanViewModel
 import com.example.perkebunan.ui.viewmodel.tanaman.InsertTanamanViewModel
@@ -17,6 +18,7 @@ object PenyediaViewModel{
         initializer { InsertTanamanViewModel(aplikasiPerkebunan().container.tanamanRepository) }
         initializer { DetailTanamanViewModel(aplikasiPerkebunan().container.tanamanRepository) }
         initializer { UpdateTanamanViewModel(aplikasiPerkebunan().container.tanamanRepository) }
+        initializer { HomePekerjaViewModel(aplikasiPerkebunan().container.pekerjaRepository) }
     }
 
     fun CreationExtras.aplikasiPerkebunan():PerkebunanApplications =
