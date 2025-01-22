@@ -47,13 +47,13 @@ fun CustomTopBar(
                     Text(
                         text = "Selamat Pagi,",
                         color = Color.White,
-                        fontSize = 20.sp,
+                        fontSize = 17.sp,
                         fontWeight = FontWeight.Normal
                     )
                     Text(
                         text = "Abrar Imam Satria",
                         color = Color.White,
-                        fontSize = 28.sp,
+                        fontSize = 23.sp,
                         fontWeight = FontWeight.Medium
                     )
                 }

@@ -174,7 +174,7 @@ fun FiturCard(
 ) {
     Card(
         modifier = Modifier
-            .size(100.dp)
+            .size(90.dp)
             .clickable { onClick() },
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -414,8 +414,7 @@ fun TnmCard(
     tanaman: Tanaman,
     modifier: Modifier = Modifier,
     onDeleteClick: (Tanaman) -> Unit = {},
-
-) {
+    ){
     Card(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
@@ -466,7 +465,7 @@ fun TnmCard(
                         .clickable {}
                 )
                 Image(
-                    painter = painterResource(id = R.drawable.recycle),
+                    painter = painterResource(id = R.drawable.bin),
                     contentDescription = "Hapus Tanaman",
                     modifier = Modifier
                         .size(24.dp)

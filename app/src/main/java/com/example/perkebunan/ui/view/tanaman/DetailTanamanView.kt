@@ -1,17 +1,25 @@
 package com.example.perkebunan.ui.view.tanaman
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -23,9 +31,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.R
@@ -64,25 +77,15 @@ fun DetailScreenTanaman(
                 canNavigateBack = true,
                 scrollBehavior = scrollBehavior,
                 navigateUp = navigateBack,
-                onRefresh = { viewModel.getTanamanbyIdTanaman(idTanaman) }
+                onRefresh = { viewModel.getTanamanbyIdTanaman(idTanaman) },
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navigateToEdit(idTanaman) },
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(18.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit Tanaman"
-                )
-            }
-        }
     ) { innerPadding ->
         DetailTanamanStatus(
             detailTanamanUiState = viewModel.tnmDetailUiState,
             retryAction = { viewModel.getTanamanbyIdTanaman(idTanaman) },
+            navigateToEdit = navigateToEdit,
+            idTanaman = idTanaman,
             modifier = Modifier.padding(innerPadding)
         )
     }
@@ -92,12 +95,16 @@ fun DetailScreenTanaman(
 private fun DetailTanamanStatus(
     detailTanamanUiState: DetailTanamanUiState,
     retryAction: () -> Unit,
+    navigateToEdit: (String) -> Unit,
+    idTanaman: String,
     modifier: Modifier = Modifier
 ) {
     when (detailTanamanUiState) {
         is DetailTanamanUiState.Loading -> OnLoadingDetail(modifier = modifier.fillMaxSize())
         is DetailTanamanUiState.Success -> DetailTanamanLayout(
             tanaman = detailTanamanUiState.tanaman,
+            navigateToEdit = navigateToEdit,
+            idTanaman = idTanaman,
             modifier = modifier.fillMaxWidth()
         )
         is DetailTanamanUiState.Error -> OnErrorDetail(retryAction, modifier = modifier.fillMaxSize())
@@ -137,33 +144,86 @@ private fun OnLoadingDetail(modifier: Modifier = Modifier) {
 @Composable
 fun DetailTanamanLayout(
     tanaman: Tanaman,
+    navigateToEdit: (String) -> Unit,
+    idTanaman: String,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.padding(16.dp),
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.palmoil),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(112.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .padding(bottom = 8.dp)
+                )
+
+                DetailItem(label = "Nama Tanaman :", value = tanaman.namaTanaman)
+                Divider(color = MaterialTheme.colorScheme.surfaceVariant)
+                DetailItem(label = "ID Tanaman :", value = tanaman.idTanaman)
+                Divider(color = MaterialTheme.colorScheme.surfaceVariant)
+                DetailItem(label = "Periode Tanam :", value = tanaman.periodeTanam)
+                Divider(color = MaterialTheme.colorScheme.surfaceVariant)
+                DetailItem(label = "Deskripsi :", value = tanaman.deskripsiTanaman)
+            }
+        }
+
+        Button(
+            onClick = { navigateToEdit(idTanaman) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF2CAC7C)
+            )
         ) {
             Text(
-                text = "ID Tanaman: ${tanaman.idTanaman}",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "Nama Tanaman: ${tanaman.namaTanaman}",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "Periode Tanaman: ${tanaman.periodeTanam}",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "Deskripsi Tanaman: ${tanaman.deskripsiTanaman}",
-                style = MaterialTheme.typography.titleMedium
+                text = "Edit Tanaman",
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.padding(vertical = 4.dp)
             )
         }
+    }
+}
+
+@Composable
+private fun DetailItem(
+    label: String,
+    value: String
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
