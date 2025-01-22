@@ -13,9 +13,9 @@ interface PekerjaRepository {
 
     suspend fun updatePekerja(idPekerja: String, pekerja: Pekerja)
 
-    suspend fun deleteTanaman(idPekerja: String)
+    suspend fun deletePekerja(idPekerja: String)
 
-    suspend fun getTanamanbyIdTanaman(idPekerja: String): Pekerja
+    suspend fun getPekerjabyIdPekerja(idPekerja: String): Pekerja
 }
 
 class NetworkPekerjaRepository(
@@ -32,7 +32,7 @@ class NetworkPekerjaRepository(
         pekerjaApiService.updatePekerja(idPekerja, pekerja)
     }
 
-    override suspend fun deleteTanaman(idPekerja: String) {
+    override suspend fun deletePekerja(idPekerja: String) {
         try {
             val response = pekerjaApiService.deletePekerja(idPekerja)
             if (!response.isSuccessful) {
@@ -47,7 +47,7 @@ class NetworkPekerjaRepository(
         }
     }
 
-    override suspend fun getTanamanbyIdTanaman(idPekerja: String): Pekerja {
+    override suspend fun getPekerjabyIdPekerja(idPekerja: String): Pekerja {
         return pekerjaApiService.getPekerjabyIdPekerja(idPekerja)
     }
 }
