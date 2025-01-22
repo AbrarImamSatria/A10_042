@@ -1,21 +1,30 @@
 package com.example.perkebunan.ui.view.pekerja
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,6 +40,75 @@ import com.example.perkebunan.R
 import com.example.perkebunan.model.Pekerja
 import com.example.perkebunan.model.Tanaman
 import com.example.perkebunan.ui.view.tanaman.TnmCard
+
+@Composable
+fun DaftarPekerjaHeader(
+    onTambahPekerjaClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        // Row untuk menyusun Teks "Daftar Pekerja" dan Tombol "Tambah Pekerja"
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp), //
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Daftar Pekerja:",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+            )
+
+            Button(
+                onClick = onTambahPekerjaClick,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00A67E)),
+                modifier = Modifier
+            ) {
+                Text(
+                    text = "Tambah Pekerja",
+                    color = Color.White
+                )
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .width(400.dp)
+                .height(50.dp)
+                .padding(start = 10.dp)
+                .padding(top = 10.dp)
+                .background(Color(0xFF00A67E), shape = MaterialTheme.shapes.medium),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    text = "Cari Pekerja Anda Disini",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.White
+                    ),
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun PkjLayout(
