@@ -1,11 +1,14 @@
 package com.example.perkebunan.dependenciesinjection
 
+import com.example.perkebunan.repository.AktivitasPertanianRepository
 import com.example.perkebunan.repository.CatatanPanenRepository
+import com.example.perkebunan.repository.NetworkAktivitasPertanianRepository
 import com.example.perkebunan.repository.NetworkCatatanPanenRepository
 import com.example.perkebunan.repository.NetworkPekerjaRepository
 import com.example.perkebunan.repository.NetworkTanamanRepository
 import com.example.perkebunan.repository.PekerjaRepository
 import com.example.perkebunan.repository.TanamanRepository
+import com.example.perkebunan.service_api.AktivitasPertanianService
 import com.example.perkebunan.service_api.CatatanPanenService
 import com.example.perkebunan.service_api.PekerjaService
 import com.example.perkebunan.service_api.TanamanService
@@ -18,6 +21,7 @@ interface AppContainer {
     val tanamanRepository: TanamanRepository
     val pekerjaRepository: PekerjaRepository
     val catatanPanenRepository: CatatanPanenRepository
+    val aktivitasPertanianRepository: AktivitasPertanianRepository
 }
 
 class PerkebunanContainer:AppContainer{
@@ -55,4 +59,12 @@ class PerkebunanContainer:AppContainer{
         NetworkCatatanPanenRepository(catatanPanenService)
     }
 
+    // AKTIVITAS PERTANIAN
+    private val aktivitasPertanianService: AktivitasPertanianService by lazy {
+        retrofit.create(AktivitasPertanianService::class.java)
+    }
+
+    override val aktivitasPertanianRepository: AktivitasPertanianRepository by lazy {
+        NetworkAktivitasPertanianRepository(aktivitasPertanianService)
+    }
 }
