@@ -3,6 +3,7 @@ package com.example.perkebunan.ui.view.catatanpanen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,6 +26,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.perkebunan.R
 import com.example.perkebunan.model.CatatanPanen
+import com.example.perkebunan.ui.viewmodel.catatanpanen.DetailCatatanPanenUiState
+
+@Composable
+private fun DetailCatatanPanenStatus(
+    detailCatatanPanenUiState: DetailCatatanPanenUiState,
+    retryAction: () -> Unit,
+    navigateToEdit: (String) -> Unit,
+    idPanen: String,
+    modifier: Modifier = Modifier
+) {
+    when (detailCatatanPanenUiState) {
+        is DetailCatatanPanenUiState.Loading -> OnLoadingDetail(
+            modifier = modifier.fillMaxSize()
+        )
+        is DetailCatatanPanenUiState.Success -> DetailCatatanPanenLayout(
+            catatanPanen = detailCatatanPanenUiState.catatanPanen,
+            navigateToEdit = navigateToEdit,
+            idPanen = idPanen,
+            modifier = modifier.fillMaxWidth()
+        )
+        is DetailCatatanPanenUiState.Error -> OnErrorDetail(
+            retryAction,
+            modifier = modifier.fillMaxSize()
+        )
+    }
+}
 
 @Composable
 private fun OnErrorDetail(retryAction: () -> Unit, modifier: Modifier = Modifier) {
