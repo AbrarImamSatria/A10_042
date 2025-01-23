@@ -1,7 +1,32 @@
 package com.example.perkebunan.ui.viewmodel.catatanpanen
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.perkebunan.model.CatatanPanen
-import com.example.perkebunan.model.Pekerja
+import com.example.perkebunan.repository.CatatanPanenRepository
+import kotlinx.coroutines.launch
+
+class InsertCatatanPanenViewModel (private val ctpn: CatatanPanenRepository): ViewModel(){
+    var uiState by mutableStateOf(InsertCatatanPanenUiState())
+        private set
+
+    fun updateInsertCtpnState(insertCatatanPanenUiEvent: InsertCatatanPanenUiEvent){
+        uiState = InsertCatatanPanenUiState(insertCatatanPanenUiEvent = insertCatatanPanenUiEvent)
+    }
+
+    suspend fun insertCtpn(){
+        viewModelScope.launch {
+            try {
+                ctpn.insertCatatanPanen(uiState.insertCatatanPanenUiEvent.toCtpn())
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
+        }
+    }
+}
 
 data class InsertCatatanPanenUiState(
     val insertCatatanPanenUiEvent: InsertCatatanPanenUiEvent = InsertCatatanPanenUiEvent()
