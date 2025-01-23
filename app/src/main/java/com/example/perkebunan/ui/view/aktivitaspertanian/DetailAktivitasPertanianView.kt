@@ -3,6 +3,7 @@ package com.example.perkebunan.ui.view.aktivitaspertanian
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,6 +26,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.perkebunan.R
 import com.example.perkebunan.model.AktivitasPertanian
+import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.DetailAktivitasPertanianUiState
+
+@Composable
+private fun DetailAktivitasPertanianStatus(
+    detailAktivitasPertanianUiState: DetailAktivitasPertanianUiState,
+    retryAction: () -> Unit,
+    navigateToEdit: (String) -> Unit,
+    idAktivitas: String,
+    modifier: Modifier = Modifier
+) {
+    when (detailAktivitasPertanianUiState) {
+        is DetailAktivitasPertanianUiState.Loading -> OnLoadingDetail(
+            modifier = modifier.fillMaxSize()
+        )
+        is DetailAktivitasPertanianUiState.Success -> DetailAktivitasPertanianLayout(
+            aktivitasPertanian = detailAktivitasPertanianUiState.aktivitasPertanian,
+            navigateToEdit = navigateToEdit,
+            idAktivitas = idAktivitas,
+            modifier = modifier.fillMaxWidth()
+        )
+        is DetailAktivitasPertanianUiState.Error -> OnErrorDetail(
+            retryAction,
+            modifier = modifier.fillMaxSize()
+        )
+    }
+}
 
 @Composable
 private fun OnErrorDetail(retryAction: () -> Unit, modifier: Modifier = Modifier) {
@@ -92,15 +119,15 @@ fun DetailAktivitasPertanianLayout(
                         .padding(bottom = 8.dp)
                 )
 
-                DetailItem(label = "ID Panen :", value = aktivitasPertanian.idAktivitas)
+                DetailItem(label = "ID Aktivitas :", value = aktivitasPertanian.idAktivitas)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
-                DetailItem(label = "ID Panen :", value = aktivitasPertanian.idTanaman)
+                DetailItem(label = "ID Tanaman :", value = aktivitasPertanian.idTanaman)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
-                DetailItem(label = "ID Panen :", value = aktivitasPertanian.idPekerja)
+                DetailItem(label = "ID Pekerja :", value = aktivitasPertanian.idPekerja)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
-                DetailItem(label = "ID Panen :", value = aktivitasPertanian.tanggalAktivitas)
+                DetailItem(label = "Tanggal Aktivitas :", value = aktivitasPertanian.tanggalAktivitas)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
-                DetailItem(label = "ID Panen :", value = aktivitasPertanian.deskripsiAktivitas)
+                DetailItem(label = "Deskripsi Aktivitas :", value = aktivitasPertanian.deskripsiAktivitas)
             }
         }
 
@@ -114,7 +141,7 @@ fun DetailAktivitasPertanianLayout(
             )
         ) {
             Text(
-                text = "Edit Aktivitas Panen",
+                text = "Edit Aktivitas Pertanian",
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
