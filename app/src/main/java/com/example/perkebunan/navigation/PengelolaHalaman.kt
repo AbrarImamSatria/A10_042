@@ -8,6 +8,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.perkebunan.ui.view.aktivitaspertanian.DestinasiDetailAktivitasPertanian
+import com.example.perkebunan.ui.view.aktivitaspertanian.DestinasiEditAktivitasPertanian
+import com.example.perkebunan.ui.view.aktivitaspertanian.DestinasiEntryAktivitasPertanian
+import com.example.perkebunan.ui.view.aktivitaspertanian.DestinasiHomeAktivitasPertanian
+import com.example.perkebunan.ui.view.aktivitaspertanian.DetailScreenAktivitasPertanian
+import com.example.perkebunan.ui.view.aktivitaspertanian.EditScreenAktivitasPertanian
+import com.example.perkebunan.ui.view.aktivitaspertanian.EntryAktScreen
+import com.example.perkebunan.ui.view.aktivitaspertanian.HomeAktivitasPertanianScreen
 import com.example.perkebunan.ui.view.catatanpanen.DestinasiDetailCatatanPanen
 import com.example.perkebunan.ui.view.catatanpanen.DestinasiEditCatatanPanen
 import com.example.perkebunan.ui.view.catatanpanen.DestinasiEntryCatatanPanen
@@ -48,7 +56,8 @@ fun PengelolaHalaman(navController: NavHostController = rememberNavController())
                     navController.navigate("tanaman_detail/$idTanaman")
                 },
                 navigateToPekerja = { navController.navigate(DestinasiHomePekerja.route) },
-                navigateToCatatanPanen = {navController.navigate(DestinasiHomeCatatanPanen.route)}
+                navigateToCatatanPanen = {navController.navigate(DestinasiHomeCatatanPanen.route)},
+                navigateToAktivitasPertanian = {navController.navigate(DestinasiHomeAktivitasPertanian.route)}
             )
         }
 
@@ -74,6 +83,9 @@ fun PengelolaHalaman(navController: NavHostController = rememberNavController())
                 navigateBack = { navController.navigateUp() },
                 navigateToEdit = { id ->
                     navController.navigate("tanaman_edit/$id")
+                },
+                navigateToInsertCatatanPanen = { idTanaman ->
+                    navController.navigate("${DestinasiEntryCatatanPanen.route}?idTanaman=$idTanaman")
                 }
             )
         }
@@ -206,6 +218,63 @@ fun PengelolaHalaman(navController: NavHostController = rememberNavController())
                 onNavigateBack = {
                     navController.navigate("CatatanPanen_detail/$idPanen") {
                         popUpTo(DestinasiEditCatatanPanen.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+
+        //RUTE UNTUK AKTIVITAS PERTANIAN
+        composable(DestinasiHomeAktivitasPertanian.route) {
+            HomeAktivitasPertanianScreen(
+                navigateToItemEntry = { navController.navigate(DestinasiEntryAktivitasPertanian.route) },
+                navigateBack = { navController.navigateUp() },
+                onDetailClick = { idAktivitas ->
+                    navController.navigate("aktivitaspertanian_detail/$idAktivitas")
+                },
+            )
+        }
+
+        composable(DestinasiEntryAktivitasPertanian.route) {
+            EntryAktScreen(navigateBack = {
+                navController.navigate(DestinasiHomeAktivitasPertanian.route) {
+                    popUpTo(DestinasiHomeAktivitasPertanian.route) {
+                        inclusive = true
+                    }
+                }
+            })
+        }
+
+        composable(
+            route = DestinasiDetailAktivitasPertanian.route,
+            arguments = listOf(navArgument(DestinasiDetailAktivitasPertanian.idAktivitasPertanianArg) {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            val idAktivitas = backStackEntry.arguments?.getString(DestinasiDetailAktivitasPertanian.idAktivitasPertanianArg) ?: ""
+            DetailScreenAktivitasPertanian(
+                idAktivitas = idAktivitas,
+                navigateBack = { navController.navigateUp() },
+                navigateToEdit = { id ->
+                    navController.navigate("aktivitaspertanian_edit/$id")
+                }
+            )
+        }
+
+        composable(
+            route = DestinasiEditAktivitasPertanian.route,
+            arguments = listOf(navArgument(DestinasiEditAktivitasPertanian.idAktivitasPertanianArg) {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            val idAktivitas = backStackEntry.arguments?.getString(DestinasiEditAktivitasPertanian.idAktivitasPertanianArg)
+            EditScreenAktivitasPertanian(
+                idAktivitas = idAktivitas ?: "",
+                navigateBack = { navController.navigateUp() },
+                onNavigateBack = {
+                    navController.navigate("AktivitasPertanian_detail/$idAktivitas") {
+                        popUpTo(DestinasiEditAktivitasPertanian.route) {
                             inclusive = true
                         }
                     }

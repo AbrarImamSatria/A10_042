@@ -71,6 +71,7 @@ fun HomeTanamanScreen(
     navigateToItemEntry: () -> Unit,
     navigateToPekerja: () -> Unit,
     navigateToCatatanPanen: () -> Unit,
+    navigateToAktivitasPertanian: () -> Unit,
     modifier: Modifier = Modifier,
     onDetailClick: (String) -> Unit = {},
     viewModel: HomeTanamanViewModel = viewModel(factory = PenyediaViewModel.Factory)
@@ -96,7 +97,7 @@ fun HomeTanamanScreen(
             FiturLainnyaSection(
                 navigateToPekerja = navigateToPekerja,
                 navigateToCatatanPanen = navigateToCatatanPanen,
-                navigateToAktivitasPertanian = { /* Navigasi ke halaman aktivitas */ },
+                navigateToAktivitasPertanian = navigateToAktivitasPertanian,
                 onRefresh = { viewModel.getTnm() },
             )
             PemanisSection()
@@ -202,6 +203,7 @@ fun FiturCard(
     Card(
         modifier = Modifier
             .size(90.dp)
+            .width(300.dp)
             .clickable { onClick() },
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
