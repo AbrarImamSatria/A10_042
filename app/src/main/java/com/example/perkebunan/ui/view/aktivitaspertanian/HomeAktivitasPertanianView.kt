@@ -39,6 +39,43 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.perkebunan.R
 import com.example.perkebunan.model.AktivitasPertanian
+import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.HomeAktivitasPertanianUiState
+
+@Composable
+fun HomeAktivitasPertanianStatus(
+    homeAktivitasPertanianUiState: HomeAktivitasPertanianUiState,
+    retryAction: () -> Unit,
+    modifier: Modifier = Modifier,
+    onDeleteClick: (AktivitasPertanian) -> Unit = {},
+    onDetailClick: (String) -> Unit
+){
+    when (homeAktivitasPertanianUiState){
+        is HomeAktivitasPertanianUiState.Loading -> OnLoading(
+            modifier = modifier.fillMaxSize()
+        )
+
+        is HomeAktivitasPertanianUiState.Succes ->
+            if (homeAktivitasPertanianUiState.aktivitasPertanian.isEmpty()){
+                return Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                    Text(text = "Tidak ada data Aktivitas Pertanian")
+                }
+            }else{
+                AktLayout(
+                    aktivitasPertanian = homeAktivitasPertanianUiState.aktivitasPertanian, modifier = modifier.fillMaxWidth(),
+                    onDetailClick = {
+                        onDetailClick(it.idAktivitas)
+                    },
+                    onDeleteClick = {
+                        onDeleteClick(it)
+                    }
+                )
+            }
+        is HomeAktivitasPertanianUiState.Error -> OnError(
+            retryAction,
+            modifier = modifier.fillMaxSize()
+        )
+    }
+}
 
 /**
  * The home sceen displaying the loading message.
