@@ -42,6 +42,47 @@ import com.example.perkebunan.model.CatatanPanen
 import com.example.perkebunan.ui.viewmodel.catatanpanen.HomeCatatanPanenUiState
 
 @Composable
+fun PemanisSectionCatatanPanen(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF00A67E), shape = MaterialTheme.shapes.medium)
+                .padding(vertical = 10.dp, horizontal = 12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.taking),
+                    contentDescription = "Icon",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(end = 12.dp)
+                )
+                Text(
+                    text = "Setiap hasil panen yang tercatat adalah cerita\ntentang ketekunan yang tumbuh di ladang.",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.padding(start = 12.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun HomeCatatanPanenStatus(
     homeCatatanPanenUiState: HomeCatatanPanenUiState,
     retryAction: () -> Unit,
@@ -227,7 +268,7 @@ fun CtpnCard(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Image(
-                painter = painterResource(id = R.drawable.farmer2),
+                painter = painterResource(id = R.drawable.rambutan),
                 contentDescription = "Gambar catatan panen",
                 modifier = Modifier.size(60.dp)
             )
