@@ -1,13 +1,15 @@
 package com.example.perkebunan.model
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class AktivitasPertanian(
     @SerialName("id_aktivitas")
     val idAktivitas: String,
     @SerialName("id_tanaman")
     val idTanaman: String,
-    @SerialName("id_Pekerja")
+    @SerialName("id_pekerja")
     val idPekerja: String,
     @SerialName("tanggal_aktivitas")
     val tanggalAktivitas: String,

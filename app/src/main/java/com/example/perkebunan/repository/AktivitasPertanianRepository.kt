@@ -5,7 +5,7 @@ import com.example.perkebunan.service_api.AktivitasPertanianService
 import java.io.IOException
 
 interface AktivitasPertanianRepository {
-    suspend fun insertAktivitasPetanian(aktivitasPertanian: AktivitasPertanian)
+    suspend fun insertAktivitasPertanian(aktivitasPertanian: AktivitasPertanian)
 
     suspend fun getAktivitasPertanian(): List<AktivitasPertanian>
 
@@ -19,7 +19,7 @@ interface AktivitasPertanianRepository {
 class NetworkAktivitasPertanianRepository(
     private val aktivitaspertanianApiService: AktivitasPertanianService
 ) : AktivitasPertanianRepository {
-    override suspend fun insertAktivitasPetanian(aktivitasPertanian: AktivitasPertanian) {
+    override suspend fun insertAktivitasPertanian(aktivitasPertanian: AktivitasPertanian) {
         aktivitaspertanianApiService.insertAktivitasPertanian(aktivitasPertanian)
     }
 
