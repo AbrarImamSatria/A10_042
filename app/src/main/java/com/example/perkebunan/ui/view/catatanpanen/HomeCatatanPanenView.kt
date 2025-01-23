@@ -41,6 +41,41 @@ import com.example.perkebunan.R
 import com.example.perkebunan.model.CatatanPanen
 import com.example.perkebunan.ui.viewmodel.catatanpanen.HomeCatatanPanenUiState
 
+@Composable
+fun HomeCatatanPanenStatus(
+    homeCatatanPanenUiState: HomeCatatanPanenUiState,
+    retryAction: () -> Unit,
+    modifier: Modifier = Modifier,
+    onDeleteClick: (CatatanPanen) -> Unit = {},
+    onDetailClick: (String) -> Unit
+){
+    when (homeCatatanPanenUiState){
+        is HomeCatatanPanenUiState.Loading -> OnLoading(modifier = modifier.fillMaxSize())
+
+        is HomeCatatanPanenUiState.Succes ->
+            if (homeCatatanPanenUiState.catatanPanen.isEmpty()){
+                return Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                    Text(text = "Tidak ada data Catatan Panen")
+                }
+            }else{
+                CtpnLayout(
+
+                    catatanPanen = homeCatatanPanenUiState.catatanPanen, modifier = modifier.fillMaxWidth(),
+                    onDetailClick = {
+                        onDetailClick(it.idPanen)
+                    },
+                    onDeleteClick = {
+                        onDeleteClick(it)
+                    }
+                )
+            }
+        is HomeCatatanPanenUiState.Error -> OnError(
+            retryAction,
+            modifier = modifier.fillMaxSize()
+        )
+    }
+}
+
 /**
  * The home sceen displaying the loading message.
  */
