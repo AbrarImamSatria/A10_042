@@ -24,22 +24,104 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.R
 import com.example.perkebunan.model.AktivitasPertanian
+import com.example.perkebunan.navigation.DestinasiNavigasi
+import com.example.perkebunan.ui.PenyediaViewModel
+import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.HomeAktivitasPertanianUiState
+import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.HomeAktivitasPertanianViewModel
+
+object DestinasiHomeAktivitasPertanian: DestinasiNavigasi {
+    override val route = "home Aktivitas Pertanian"
+    override val titleRes = "Manajemen Aktivitas Pertanian"
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeAktivitasPertanianScreen(
+    navigateToItemEntry: () -> Unit,
+    navigateBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    onDetailClick: (String) -> Unit = {},
+    viewModel: HomeAktivitasPertanianViewModel = viewModel(factory = PenyediaViewModel.Factory)
+) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var selectedAktivitasPertanian by remember { mutableStateOf<AktivitasPertanian?>(null) }
+
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CostumeTopAppBar(
+                title = DestinasiHomeAktivitasPertanian.titleRes,
+                canNavigateBack = true,
+                scrollBehavior = scrollBehavior,
+                navigateUp = navigateBack,
+                onRefresh = { viewModel.getAkt() },
+            )
+        },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
+
+            PemanisSectionAktivitasPertanian()
+            DaftarAktivitasPertanianHeader(
+                onTambahAktivitasPertanianClick = navigateToItemEntry
+            )
+
+            HomeAktivitasPertanianStatus(
+                homeAktivitasPertanianUiState = viewModel.aktUiState,
+                retryAction = { viewModel.getAkt() },
+                onDetailClick = onDetailClick,
+                onDeleteClick = { aktivitasPertanian ->
+                    selectedAktivitasPertanian = aktivitasPertanian
+                    showDeleteDialog = true
+                }
+            )
+        }
+
+        if (showDeleteDialog) {
+            DeleteConfirmationDialog(
+                onDeleteConfirm = {
+                    selectedAktivitasPertanian?.let { aktivitasPertanian ->
+                        viewModel.deleteAkt(aktivitasPertanian.idAktivitas)
+                        viewModel.getAkt()
+                    }
+                    showDeleteDialog = false
+                },
+                onDeleteCancel = {
+                    showDeleteDialog = false
+                }
+            )
+        }
+    }
+}
 
 @Composable
 fun PemanisSectionAktivitasPertanian(
@@ -171,7 +253,7 @@ fun DaftarAktivitasPertanianHeader(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Daftar Aktivitas Pertanian:",
+                text = "Daftar Aktivitas :",
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
