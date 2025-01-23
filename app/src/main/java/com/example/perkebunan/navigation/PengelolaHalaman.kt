@@ -8,6 +8,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.perkebunan.ui.view.catatanpanen.DestinasiDetailCatatanPanen
+import com.example.perkebunan.ui.view.catatanpanen.DestinasiEditCatatanPanen
+import com.example.perkebunan.ui.view.catatanpanen.DestinasiEntryCatatanPanen
+import com.example.perkebunan.ui.view.catatanpanen.DestinasiHomeCatatanPanen
+import com.example.perkebunan.ui.view.catatanpanen.DetailScreenCatatanPanen
+import com.example.perkebunan.ui.view.catatanpanen.EditScreenCatatanPanen
+import com.example.perkebunan.ui.view.catatanpanen.EntryCtpnScreen
+import com.example.perkebunan.ui.view.catatanpanen.HomeCatatanPanenScreen
 import com.example.perkebunan.ui.view.pekerja.DestinasiDetailPekerja
 import com.example.perkebunan.ui.view.pekerja.DestinasiEditPekerja
 import com.example.perkebunan.ui.view.pekerja.DestinasiEntryPekerja
@@ -39,7 +47,8 @@ fun PengelolaHalaman(navController: NavHostController = rememberNavController())
                 onDetailClick = { idTanaman ->
                     navController.navigate("tanaman_detail/$idTanaman")
                 },
-                navigateToPekerja = { navController.navigate(DestinasiHomePekerja.route) }
+                navigateToPekerja = { navController.navigate(DestinasiHomePekerja.route) },
+                navigateToCatatanPanen = {navController.navigate(DestinasiHomeCatatanPanen.route)}
             )
         }
 
@@ -140,6 +149,63 @@ fun PengelolaHalaman(navController: NavHostController = rememberNavController())
                 onNavigateBack = {
                     navController.navigate("Pekerja_detail/$idPekerja") {
                         popUpTo(DestinasiEditPekerja.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+
+        //RUTE UNTUK CATATAN PANEN
+        composable(DestinasiHomeCatatanPanen.route) {
+            HomeCatatanPanenScreen(
+                navigateToItemEntry = { navController.navigate(DestinasiEntryCatatanPanen.route) },
+                navigateBack = { navController.navigateUp() },
+                onDetailClick = { idPanen ->
+                    navController.navigate("catatanpanen_detail/$idPanen")
+                },
+            )
+        }
+
+        composable(DestinasiEntryCatatanPanen.route) {
+            EntryCtpnScreen(navigateBack = {
+                navController.navigate(DestinasiHomeCatatanPanen.route) {
+                    popUpTo(DestinasiHomeCatatanPanen.route) {
+                        inclusive = true
+                    }
+                }
+            })
+        }
+
+        composable(
+            route = DestinasiDetailCatatanPanen.route,
+            arguments = listOf(navArgument(DestinasiDetailCatatanPanen.idCatatanPanenArg) {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            val idPanen = backStackEntry.arguments?.getString(DestinasiDetailCatatanPanen.idCatatanPanenArg) ?: ""
+            DetailScreenCatatanPanen(
+                idPanen = idPanen,
+                navigateBack = { navController.navigateUp() },
+                navigateToEdit = { id ->
+                    navController.navigate("catatanpanen_edit/$id")
+                }
+            )
+        }
+
+        composable(
+            route = DestinasiEditCatatanPanen.route,
+            arguments = listOf(navArgument(DestinasiEditCatatanPanen.idCatatanPanenArg) {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            val idPanen = backStackEntry.arguments?.getString(DestinasiEditCatatanPanen.idCatatanPanenArg)
+            EditScreenCatatanPanen(
+                idPanen = idPanen ?: "",
+                navigateBack = { navController.navigateUp() },
+                onNavigateBack = {
+                    navController.navigate("CatatanPanen_detail/$idPanen") {
+                        popUpTo(DestinasiEditCatatanPanen.route) {
                             inclusive = true
                         }
                     }

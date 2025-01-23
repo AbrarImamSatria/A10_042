@@ -70,6 +70,7 @@ object DestinasiHomeTanaman: DestinasiNavigasi {
 fun HomeTanamanScreen(
     navigateToItemEntry: () -> Unit,
     navigateToPekerja: () -> Unit,
+    navigateToCatatanPanen: () -> Unit,
     modifier: Modifier = Modifier,
     onDetailClick: (String) -> Unit = {},
     viewModel: HomeTanamanViewModel = viewModel(factory = PenyediaViewModel.Factory)
@@ -94,8 +95,8 @@ fun HomeTanamanScreen(
         ) {
             FiturLainnyaSection(
                 navigateToPekerja = navigateToPekerja,
-                navigateToCatatan = { /* Navigasi ke halaman catatan */ },
-                navigateToAktivitas = { /* Navigasi ke halaman aktivitas */ },
+                navigateToCatatanPanen = navigateToCatatanPanen,
+                navigateToAktivitasPertanian = { /* Navigasi ke halaman aktivitas */ },
                 onRefresh = { viewModel.getTnm() },
             )
             PemanisSection()
@@ -137,8 +138,8 @@ fun HomeTanamanScreen(
 @Composable
 fun FiturLainnyaSection(
     navigateToPekerja: () -> Unit,
-    navigateToCatatan: () -> Unit,
-    navigateToAktivitas: () -> Unit,
+    navigateToCatatanPanen: () -> Unit,
+    navigateToAktivitasPertanian: () -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -180,12 +181,12 @@ fun FiturLainnyaSection(
             FiturCard(
                 iconResId = R.drawable.essay,
                 title = "Catatan",
-                onClick = navigateToCatatan
+                onClick = navigateToCatatanPanen
             )
             FiturCard(
                 iconResId = R.drawable.planting,
                 title = "Aktivitas",
-                onClick = navigateToAktivitas
+                onClick = navigateToAktivitasPertanian
             )
         }
     }

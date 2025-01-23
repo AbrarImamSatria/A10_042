@@ -293,7 +293,7 @@ fun DaftarPekerjaHeader(
                     modifier = Modifier.size(24.dp)
                 )
                 Text(
-                    text = "Cari Pekerja Anda Disini",
+                    text = "Cari Nama Pekerja Disini",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = Color.White
                     ),
