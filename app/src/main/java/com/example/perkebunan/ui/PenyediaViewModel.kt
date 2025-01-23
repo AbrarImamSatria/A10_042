@@ -5,6 +5,10 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.perkebunan.PerkebunanApplications
+import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.DetailAktivitasPertanianViewModel
+import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.HomeAktivitasPertanianViewModel
+import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.InsertAktivitasPertanianViewModel
+import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.UpdateAktivitasPertanianViewModel
 import com.example.perkebunan.ui.viewmodel.catatanpanen.DetailCatatanPanenViewModel
 import com.example.perkebunan.ui.viewmodel.catatanpanen.HomeCatatanPanenViewModel
 import com.example.perkebunan.ui.viewmodel.catatanpanen.InsertCatatanPanenViewModel
@@ -37,6 +41,12 @@ object PenyediaViewModel{
         initializer { InsertCatatanPanenViewModel(aplikasiPerkebunan().container.catatanPanenRepository) }
         initializer { DetailCatatanPanenViewModel(aplikasiPerkebunan().container.catatanPanenRepository) }
         initializer { UpdateCatatanPanenViewModel(aplikasiPerkebunan().container.catatanPanenRepository) }
+
+        // VIEWMODEL AKTIVITAS PERTANIAN
+        initializer { HomeAktivitasPertanianViewModel(aplikasiPerkebunan().container.aktivitasPertanianRepository) }
+        initializer { InsertAktivitasPertanianViewModel(aplikasiPerkebunan().container.aktivitasPertanianRepository) }
+        initializer { DetailAktivitasPertanianViewModel(aplikasiPerkebunan().container.aktivitasPertanianRepository) }
+        initializer { UpdateAktivitasPertanianViewModel(aplikasiPerkebunan().container.aktivitasPertanianRepository) }
     }
 
     fun CreationExtras.aplikasiPerkebunan():PerkebunanApplications =
