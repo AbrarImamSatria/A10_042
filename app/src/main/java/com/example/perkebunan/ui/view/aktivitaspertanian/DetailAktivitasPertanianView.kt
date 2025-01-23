@@ -14,19 +14,72 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.R
 import com.example.perkebunan.model.AktivitasPertanian
+import com.example.perkebunan.navigation.DestinasiNavigasi
+import com.example.perkebunan.ui.PenyediaViewModel
+import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.DetailAktivitasPertanianUiState
+import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.DetailAktivitasPertanianViewModel
+
+object DestinasiDetailAktivitasPertanian : DestinasiNavigasi {
+    override val route = "aktivitaspertanian_detail/{idAktivitas}"
+    override val titleRes = "Detail Aktivitas Pertanian"
+    const val idAktivitasPertanianArg = "idAktivitas"
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DetailScreenAktivitasPertanian(
+    navigateBack: () -> Unit,
+    navigateToEdit: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    idAktivitas: String,
+    viewModel: DetailAktivitasPertanianViewModel = viewModel(factory = PenyediaViewModel.Factory)
+) {
+    LaunchedEffect(idAktivitas) {
+        viewModel.getAktivitasPertanianbyIdAktivitas(idAktivitas)
+    }
+
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CostumeTopAppBar(
+                title = DestinasiDetailAktivitasPertanian.titleRes,
+                canNavigateBack = true,
+                scrollBehavior = scrollBehavior,
+                navigateUp = navigateBack,
+                onRefresh = { viewModel.getAktivitasPertanianbyIdAktivitas(idAktivitas) },
+            )
+        },
+    ) { innerPadding ->
+        DetailAktivitasPertanianStatus(
+            detailAktivitasPertanianUiState = viewModel.aktDetailUiState,
+            retryAction = { viewModel.getAktivitasPertanianbyIdAktivitas(idAktivitas) },
+            navigateToEdit = navigateToEdit,
+            idAktivitas = idAktivitas,
+            modifier = Modifier.padding(innerPadding)
+        )
+    }
+}
 
 @Composable
 private fun DetailAktivitasPertanianStatus(
