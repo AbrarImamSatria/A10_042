@@ -42,6 +42,47 @@ import com.example.perkebunan.model.AktivitasPertanian
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.HomeAktivitasPertanianUiState
 
 @Composable
+fun PemanisSectionAktivitasPertanian(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF00A67E), shape = MaterialTheme.shapes.medium)
+                .padding(vertical = 10.dp, horizontal = 12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.agriculture),
+                    contentDescription = "Icon",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(end = 12.dp)
+                )
+                Text(
+                    text = "Setiap benih yang ditanam,\nmembawa harapan baru.",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.padding(start = 12.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun HomeAktivitasPertanianStatus(
     homeAktivitasPertanianUiState: HomeAktivitasPertanianUiState,
     retryAction: () -> Unit,
