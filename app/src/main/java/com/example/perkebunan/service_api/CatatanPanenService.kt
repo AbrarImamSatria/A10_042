@@ -1,7 +1,6 @@
 package com.example.perkebunan.service_api
 
 import com.example.perkebunan.model.CatatanPanen
-import com.example.perkebunan.model.Pekerja
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
