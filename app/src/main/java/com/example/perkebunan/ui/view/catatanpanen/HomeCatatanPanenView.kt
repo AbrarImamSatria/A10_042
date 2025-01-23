@@ -24,22 +24,105 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.R
 import com.example.perkebunan.model.CatatanPanen
+import com.example.perkebunan.navigation.DestinasiNavigasi
+import com.example.perkebunan.ui.PenyediaViewModel
+import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
 import com.example.perkebunan.ui.viewmodel.catatanpanen.HomeCatatanPanenUiState
+import com.example.perkebunan.ui.viewmodel.catatanpanen.HomeCatatanPanenViewModel
+
+
+object DestinasiHomeCatatanPanen: DestinasiNavigasi {
+    override val route = "home catatan panen"
+    override val titleRes = "Manajemen Catatan Panen"
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeCatatanPanenScreen(
+    navigateToItemEntry: () -> Unit,
+    navigateBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    onDetailClick: (String) -> Unit = {},
+    viewModel: HomeCatatanPanenViewModel = viewModel(factory = PenyediaViewModel.Factory)
+) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var selectedCatatanPanen by remember { mutableStateOf<CatatanPanen?>(null) }
+
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CostumeTopAppBar(
+                title = DestinasiHomeCatatanPanen.titleRes,
+                canNavigateBack = true,
+                scrollBehavior = scrollBehavior,
+                navigateUp = navigateBack,
+                onRefresh = { viewModel.getCtpn() },
+            )
+        },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
+
+            PemanisSectionCatatanPanen()
+            DaftarCatatanPanenHeader(
+                onTambahCatatanPanenClick = navigateToItemEntry
+            )
+
+            HomeCatatanPanenStatus(
+                homeCatatanPanenUiState = viewModel.ctpnUiState,
+                retryAction = { viewModel.getCtpn() },
+                onDetailClick = onDetailClick,
+                onDeleteClick = { catatanPanen ->
+                    selectedCatatanPanen = catatanPanen
+                    showDeleteDialog = true
+                }
+            )
+        }
+
+        if (showDeleteDialog) {
+            DeleteConfirmationDialog(
+                onDeleteConfirm = {
+                    selectedCatatanPanen?.let { catatanPanen ->
+                        viewModel.deleteCtpn(catatanPanen.idPanen)
+                        viewModel.getCtpn()
+                    }
+                    showDeleteDialog = false
+                },
+                onDeleteCancel = {
+                    showDeleteDialog = false
+                }
+            )
+        }
+    }
+}
 
 @Composable
 fun PemanisSectionCatatanPanen(
@@ -70,7 +153,7 @@ fun PemanisSectionCatatanPanen(
                         .padding(end = 12.dp)
                 )
                 Text(
-                    text = "Setiap hasil panen yang tercatat adalah cerita\ntentang ketekunan yang tumbuh di ladang.",
+                    text = "Setiap catatan adalah hasil\njerih payah yang terbayar.",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = Color.White,
                         fontWeight = FontWeight.Bold
@@ -183,7 +266,7 @@ fun DaftarCatatanPanenHeader(
                 modifier = Modifier
             ) {
                 Text(
-                    text = "Tambah Catatan panen",
+                    text = "Tambah Catatan",
                     color = Color.White
                 )
             }
