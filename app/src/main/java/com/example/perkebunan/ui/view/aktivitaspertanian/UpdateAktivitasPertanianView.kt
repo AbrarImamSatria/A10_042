@@ -4,19 +4,84 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.perkebunan.navigation.DestinasiNavigasi
+import com.example.perkebunan.ui.PenyediaViewModel
+import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.UpdateAktivitasPertanianUiEvent
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.UpdateAktivitasPertanianUiState
+import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.UpdateAktivitasPertanianViewModel
+import kotlinx.coroutines.launch
+
+object DestinasiEditAktivitasPertanian : DestinasiNavigasi {
+    override val route = "AktivitasPertanian_edit/{idAktivitas}"
+    override val titleRes = "Edit Aktivitas Pertanian"
+    const val idAktivitasPertanianArg = "idAktivitas"
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditScreenAktivitasPertanian(
+    navigateBack: () -> Unit,
+    onNavigateBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: UpdateAktivitasPertanianViewModel = viewModel(factory = PenyediaViewModel.Factory),
+    idAktivitas: String
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    LaunchedEffect(key1 = true) {
+        coroutineScope.launch {
+            viewModel.getAktivitasPertanianbyIdAktivitas(idAktivitas)
+        }
+    }
+
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CostumeTopAppBar(
+                title = DestinasiEditAktivitasPertanian.titleRes,
+                canNavigateBack = true,
+                scrollBehavior = scrollBehavior,
+                navigateUp = navigateBack
+            )
+        }
+    ) { innerPadding ->
+        EditBodyAktivitasPertanian(
+            updateAktivitasPertanianUiState = viewModel.uiState,
+            onAktValueChange = viewModel::updateAktivitasPertanianUiState,
+            onSaveClick = {
+                coroutineScope.launch {
+                    viewModel.updateAkt(idAktivitas)
+                    onNavigateBack()
+                }
+            },
+            modifier = Modifier
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+                .fillMaxWidth()
+        )
+    }
+}
 
 @Composable
 fun EditBodyAktivitasPertanian(
