@@ -30,9 +30,11 @@ import com.example.perkebunan.navigation.DestinasiNavigasi
 import com.example.perkebunan.ui.PenyediaViewModel
 import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
 import com.example.perkebunan.ui.viewmodel.catatanpanen.FormErrorStateCatatanPanen
+import com.example.perkebunan.ui.viewmodel.catatanpanen.InsertCatatanPanenViewModel
 import com.example.perkebunan.ui.viewmodel.catatanpanen.UpdateCatatanPanenUiEvent
 import com.example.perkebunan.ui.viewmodel.catatanpanen.UpdateCatatanPanenUiState
 import com.example.perkebunan.ui.viewmodel.catatanpanen.UpdateCatatanPanenViewModel
+import com.example.perkebunan.ui.widget.DynamicSelectTextField
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -102,7 +104,8 @@ fun EditScreenCatatanPanen(
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            viewModel = viewModel
         )
     }
 }
@@ -112,7 +115,8 @@ fun EditBodyCatatanPanen(
     updateCatatanPanenUiState: UpdateCatatanPanenUiState,
     onCtpnValueChange: (UpdateCatatanPanenUiEvent) -> Unit,
     onSaveClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: UpdateCatatanPanenViewModel
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(18.dp),
@@ -122,7 +126,8 @@ fun EditBodyCatatanPanen(
             updateCatatanPanenUiEvent = updateCatatanPanenUiState.updateCatatanPanenUiEvent,
             formErrorStateCatatanPanen = updateCatatanPanenUiState.formErrorState,
             onValueChange = onCtpnValueChange,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            viewModel = viewModel
         )
         Button(
             onClick = onSaveClick,
@@ -144,26 +149,24 @@ fun FormInputCatatanPanenEdit(
     formErrorStateCatatanPanen: FormErrorStateCatatanPanen,
     modifier: Modifier = Modifier,
     onValueChange: (UpdateCatatanPanenUiEvent) -> Unit = {},
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    viewModel: UpdateCatatanPanenViewModel
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        OutlinedTextField(
-            value = updateCatatanPanenUiEvent.idTanaman,
-            onValueChange = { onValueChange(updateCatatanPanenUiEvent.copy(idTanaman = it)) },
-            label = { Text("ID Tanaman") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true,
+        DynamicSelectTextField(
+            selectedValue = updateCatatanPanenUiEvent.idTanaman,
+            options = viewModel.tanamanList.map { it.namaTanaman },
+            label = "Pilih Tanaman",
+            onValueChangedEvent = { selectedNama ->
+                onValueChange(updateCatatanPanenUiEvent.copy(idTanaman = selectedNama))
+            },
             isError = formErrorStateCatatanPanen.idTanaman != null,
-            supportingText = {
-                formErrorStateCatatanPanen.idTanaman?.let {
-                    Text(text = it, color = MaterialTheme.colorScheme.error)
-                }
-            }
+            errorMessage = formErrorStateCatatanPanen.idTanaman
         )
+
         OutlinedTextField(
             value = updateCatatanPanenUiEvent.tanggalPanen,
             onValueChange = { onValueChange(updateCatatanPanenUiEvent.copy(tanggalPanen = it)) },
@@ -178,6 +181,7 @@ fun FormInputCatatanPanenEdit(
                 }
             }
         )
+
         OutlinedTextField(
             value = updateCatatanPanenUiEvent.jumlahPanen,
             onValueChange = { onValueChange(updateCatatanPanenUiEvent.copy(jumlahPanen = it)) },
@@ -192,6 +196,7 @@ fun FormInputCatatanPanenEdit(
                 }
             }
         )
+
         OutlinedTextField(
             value = updateCatatanPanenUiEvent.keterangan,
             onValueChange = { onValueChange(updateCatatanPanenUiEvent.copy(keterangan = it)) },
@@ -206,6 +211,7 @@ fun FormInputCatatanPanenEdit(
                 }
             }
         )
+
         Divider(
             thickness = 8.dp,
             modifier = Modifier.padding(12.dp)

@@ -6,12 +6,29 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.perkebunan.model.CatatanPanen
+import com.example.perkebunan.model.Tanaman
 import com.example.perkebunan.repository.CatatanPanenRepository
+import com.example.perkebunan.repository.TanamanRepository
 import kotlinx.coroutines.launch
 
-class UpdateCatatanPanenViewModel(private val ctpn: CatatanPanenRepository) : ViewModel() {
+class UpdateCatatanPanenViewModel(
+    private val ctpn: CatatanPanenRepository,
+    private val tanamanRepository: TanamanRepository
+) : ViewModel() {
     var uiState by mutableStateOf(UpdateCatatanPanenUiState())
         private set
+    var tanamanList by mutableStateOf(emptyList<Tanaman>())
+        private set
+
+    init {
+        fetchTanamanList()
+    }
+
+    private fun fetchTanamanList() {
+        viewModelScope.launch {
+            tanamanList = tanamanRepository.getTanaman()
+        }
+    }
 
     fun updateCatatanPanenUiState(updateCatatanPanenUiEvent: UpdateCatatanPanenUiEvent) {
         uiState = uiState.copy(updateCatatanPanenUiEvent = updateCatatanPanenUiEvent)
@@ -45,7 +62,7 @@ class UpdateCatatanPanenViewModel(private val ctpn: CatatanPanenRepository) : Vi
     fun validateFields(): Boolean {
         val event = uiState.updateCatatanPanenUiEvent
         val errorState = FormErrorStateCatatanPanen(
-            idTanaman = if (event.idTanaman.isNotEmpty()) null else "ID Tanaman tidak boleh kosong",
+            idTanaman = if (event.idTanaman.isNotEmpty()) null else "Tanaman tidak boleh kosong",
             tanggalPanen = if (event.tanggalPanen.isNotEmpty()) null else "Tanggal Panen tidak boleh kosong",
             jumlahPanen = if (event.jumlahPanen.isNotEmpty()) null else "Jumlah Panen tidak boleh kosong",
             keterangan = if (event.keterangan.isNotEmpty()) null else "Keterangan tidak boleh kosong"
