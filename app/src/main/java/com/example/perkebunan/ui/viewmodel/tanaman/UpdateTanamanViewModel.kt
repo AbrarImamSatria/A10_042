@@ -14,17 +14,45 @@ class UpdateTanamanViewModel(private val tnm: TanamanRepository) : ViewModel() {
         private set
 
     fun updateTanamanUiState(updateTanamanUiEvent: UpdateTanamanUiEvent) {
-        uiState = UpdateTanamanUiState(updateTanamanUiEvent = updateTanamanUiEvent)
+        uiState = uiState.copy(updateTanamanUiEvent = updateTanamanUiEvent)
     }
 
     suspend fun updateTnm(idTanaman: String) {
-        viewModelScope.launch {
+        if (validateFields()) {
             try {
                 tnm.updateTanaman(idTanaman, uiState.updateTanamanUiEvent.toTnm())
+                uiState = uiState.copy(
+                    snackbarMessage = "Tanaman berhasil diperbarui",
+                    isSnackbarVisible = true
+                )
             } catch (e: Exception) {
+                uiState = uiState.copy(
+                    snackbarMessage = "Gagal memperbarui Tanaman: ${e.localizedMessage}",
+                    isSnackbarVisible = true
+                )
                 e.printStackTrace()
             }
         }
+    }
+
+    fun resetSnackbarState() {
+        uiState = uiState.copy(
+            isSnackbarVisible = false,
+            snackbarMessage = ""
+        )
+    }
+
+    fun validateFields(): Boolean {
+        val event = uiState.updateTanamanUiEvent
+        val errorState = FormErrorStateUpdate(
+            namaTanaman = if (event.namaTanaman.isNotEmpty()) null else "Nama Tanaman tidak boleh kosong",
+            periodeTanam = if (event.periodeTanam.isNotEmpty()) null else "Periode Tanam tidak boleh kosong",
+            deskripsiTanaman = if (event.deskripsiTanaman.isNotEmpty()) null else "Deskripsi Tanaman tidak boleh kosong"
+        )
+
+        uiState = uiState.copy(formErrorState = errorState)
+
+        return errorState.isValid()
     }
 
     suspend fun getTanamanbyIdTanaman(idTanaman: String) {
@@ -39,8 +67,22 @@ class UpdateTanamanViewModel(private val tnm: TanamanRepository) : ViewModel() {
     }
 }
 
+data class FormErrorStateUpdate(
+    val namaTanaman: String? = null,
+    val periodeTanam: String? = null,
+    val deskripsiTanaman: String? = null
+) {
+    fun isValid(): Boolean =
+        namaTanaman == null &&
+                periodeTanam == null &&
+                deskripsiTanaman == null
+}
+
 data class UpdateTanamanUiState(
-    val updateTanamanUiEvent: UpdateTanamanUiEvent = UpdateTanamanUiEvent()
+    val updateTanamanUiEvent: UpdateTanamanUiEvent = UpdateTanamanUiEvent(),
+    val formErrorState: FormErrorStateUpdate = FormErrorStateUpdate(),
+    val isSnackbarVisible: Boolean = false,
+    val snackbarMessage: String = ""
 )
 
 data class UpdateTanamanUiEvent(

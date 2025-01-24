@@ -13,10 +13,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,10 +29,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.navigation.DestinasiNavigasi
 import com.example.perkebunan.ui.PenyediaViewModel
 import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
+import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.FormErrorStateUpdate
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.UpdateAktivitasPertanianUiEvent
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.UpdateAktivitasPertanianUiState
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.UpdateAktivitasPertanianViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 object DestinasiEditAktivitasPertanian : DestinasiNavigasi {
     override val route = "AktivitasPertanian_edit/{idAktivitas}"
@@ -46,8 +53,19 @@ fun EditScreenAktivitasPertanian(
     viewModel: UpdateAktivitasPertanianViewModel = viewModel(factory = PenyediaViewModel.Factory),
     idAktivitas: String
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    // Observe snackbar message
+    LaunchedEffect(viewModel.uiState.isSnackbarVisible, viewModel.uiState.snackbarMessage) {
+        viewModel.uiState.snackbarMessage.takeIf { it.isNotEmpty() }?.let { message ->
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(message)
+                viewModel.resetSnackbarState()
+            }
+        }
+    }
 
     LaunchedEffect(key1 = true) {
         coroutineScope.launch {
@@ -64,15 +82,21 @@ fun EditScreenAktivitasPertanian(
                 scrollBehavior = scrollBehavior,
                 navigateUp = navigateBack
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
         EditBodyAktivitasPertanian(
             updateAktivitasPertanianUiState = viewModel.uiState,
             onAktValueChange = viewModel::updateAktivitasPertanianUiState,
             onSaveClick = {
                 coroutineScope.launch {
-                    viewModel.updateAkt(idAktivitas)
-                    onNavigateBack()
+                    if (viewModel.validateFields()) {
+                        viewModel.updateAkt(idAktivitas)
+                        delay(600)
+                        withContext(Dispatchers.Main) {
+                            onNavigateBack()
+                        }
+                    }
                 }
             },
             modifier = Modifier
@@ -96,6 +120,7 @@ fun EditBodyAktivitasPertanian(
     ) {
         FormInputAktivitasPertanianEdit(
             updateAktivitasPertanianUiEvent = updateAktivitasPertanianUiState.updateAktivitasPertanianUiEvent,
+            formErrorStateUpdate = updateAktivitasPertanianUiState.formErrorState,
             onValueChange = onAktValueChange,
             modifier = Modifier.fillMaxWidth()
         )
@@ -112,10 +137,12 @@ fun EditBodyAktivitasPertanian(
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormInputAktivitasPertanianEdit(
     updateAktivitasPertanianUiEvent: UpdateAktivitasPertanianUiEvent,
+    formErrorStateUpdate: FormErrorStateUpdate,
     modifier: Modifier = Modifier,
     onValueChange: (UpdateAktivitasPertanianUiEvent) -> Unit = {},
     enabled: Boolean = true
@@ -130,7 +157,13 @@ fun FormInputAktivitasPertanianEdit(
             label = { Text("ID Tanaman") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorStateUpdate.idTanaman != null,
+            supportingText = {
+                formErrorStateUpdate.idTanaman?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = updateAktivitasPertanianUiEvent.idPekerja,
@@ -138,7 +171,13 @@ fun FormInputAktivitasPertanianEdit(
             label = { Text("ID Pekerja") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorStateUpdate.idPekerja != null,
+            supportingText = {
+                formErrorStateUpdate.idPekerja?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = updateAktivitasPertanianUiEvent.tanggalAktivitas,
@@ -146,7 +185,13 @@ fun FormInputAktivitasPertanianEdit(
             label = { Text("Tanggal Aktivitas") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorStateUpdate.tanggalAktivitas != null,
+            supportingText = {
+                formErrorStateUpdate.tanggalAktivitas?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = updateAktivitasPertanianUiEvent.deskripsiAktivitas,
@@ -154,7 +199,13 @@ fun FormInputAktivitasPertanianEdit(
             label = { Text("Deskripsi Aktivitas") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorStateUpdate.deskripsiAktivitas != null,
+            supportingText = {
+                formErrorStateUpdate.deskripsiAktivitas?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         if (enabled) {
             Text(

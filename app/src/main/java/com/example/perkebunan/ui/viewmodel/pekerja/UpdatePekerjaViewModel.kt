@@ -14,17 +14,45 @@ class UpdatePekerjaViewModel(private val pkj: PekerjaRepository) : ViewModel() {
         private set
 
     fun updatePekerjaUiState(updatePekerjaUiEvent: UpdatePekerjaUiEvent) {
-        uiState = UpdatePekerjaUiState(updatePekerjaUiEvent = updatePekerjaUiEvent)
+        uiState = uiState.copy(updatePekerjaUiEvent = updatePekerjaUiEvent)
     }
 
     suspend fun updatePkj(idPekerja: String) {
-        viewModelScope.launch {
+        if (validateFields()) {
             try {
                 pkj.updatePekerja(idPekerja, uiState.updatePekerjaUiEvent.toPkj())
+                uiState = uiState.copy(
+                    snackbarMessage = "Pekerja berhasil diperbarui",
+                    isSnackbarVisible = true
+                )
             } catch (e: Exception) {
+                uiState = uiState.copy(
+                    snackbarMessage = "Gagal memperbarui Pekerja: ${e.localizedMessage}",
+                    isSnackbarVisible = true
+                )
                 e.printStackTrace()
             }
         }
+    }
+
+    fun resetSnackbarState() {
+        uiState = uiState.copy(
+            isSnackbarVisible = false,
+            snackbarMessage = ""
+        )
+    }
+
+    fun validateFields(): Boolean {
+        val event = uiState.updatePekerjaUiEvent
+        val errorState = FormErrorStateUpdatePekerja(
+            namaPekerja = if (event.namaPekerja.isNotEmpty()) null else "Nama Pekerja tidak boleh kosong",
+            jabatan = if (event.jabatan.isNotEmpty()) null else "Jabatan tidak boleh kosong",
+            kontakPekerja = if (event.kontakPekerja.isNotEmpty()) null else "Kontak Pekerja tidak boleh kosong"
+        )
+
+        uiState = uiState.copy(formErrorState = errorState)
+
+        return errorState.isValid()
     }
 
     suspend fun getPekerjabyIdPekerja(idPekerja: String) {
@@ -39,8 +67,22 @@ class UpdatePekerjaViewModel(private val pkj: PekerjaRepository) : ViewModel() {
     }
 }
 
+data class FormErrorStateUpdatePekerja(
+    val namaPekerja: String? = null,
+    val jabatan: String? = null,
+    val kontakPekerja: String? = null
+) {
+    fun isValid(): Boolean =
+        namaPekerja == null &&
+                jabatan == null &&
+                kontakPekerja == null
+}
+
 data class UpdatePekerjaUiState(
-    val updatePekerjaUiEvent: UpdatePekerjaUiEvent = UpdatePekerjaUiEvent()
+    val updatePekerjaUiEvent: UpdatePekerjaUiEvent = UpdatePekerjaUiEvent(),
+    val formErrorState: FormErrorStateUpdatePekerja = FormErrorStateUpdatePekerja(),
+    val isSnackbarVisible: Boolean = false,
+    val snackbarMessage: String = ""
 )
 
 data class UpdatePekerjaUiEvent(

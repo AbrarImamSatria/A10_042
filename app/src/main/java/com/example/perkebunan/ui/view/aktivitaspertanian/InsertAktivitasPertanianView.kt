@@ -13,9 +13,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,10 +29,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.navigation.DestinasiNavigasi
 import com.example.perkebunan.ui.PenyediaViewModel
 import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
+import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.FormErrorState
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.InsertAktivitasPertanianUiEvent
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.InsertAktivitasPertanianUiState
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.InsertAktivitasPertanianViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 object DestinasiEntryAktivitasPertanian: DestinasiNavigasi {
     override val route = "item_entryAktivitasPertanian"
@@ -39,13 +47,25 @@ object DestinasiEntryAktivitasPertanian: DestinasiNavigasi {
 @Composable
 fun EntryAktScreen(
     navigateBack: () -> Unit,
+    onNavigate: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: InsertAktivitasPertanianViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ){
+    val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    Scaffold (
+    // Observe snackbar message
+    LaunchedEffect(viewModel.uiState.isSnackbarVisible, viewModel.uiState.snackbarMessage) {
+        viewModel.uiState.snackbarMessage.takeIf { it.isNotEmpty() }?.let { message ->
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(message)
+                viewModel.resetSnackbarState()
+            }
+        }
+    }
+
+    Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CostumeTopAppBar(
@@ -54,15 +74,21 @@ fun EntryAktScreen(
                 scrollBehavior = scrollBehavior,
                 navigateUp = navigateBack
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ){ innerPadding ->
         EntryBody(
             insertAktivitasPertanianUiState = viewModel.uiState,
             onSiswaValueChange = viewModel::updateInsertAktState,
             onSaveClick = {
                 coroutineScope.launch {
-                    viewModel.insertAkt()
-                    navigateBack()
+                    if (viewModel.validateFields()) {
+                        viewModel.insertAkt()
+                        delay(600)
+                        withContext(Dispatchers.Main) {
+                            onNavigate()
+                        }
+                    }
                 }
             },
             modifier = Modifier
@@ -86,6 +112,7 @@ fun EntryBody(
     ){
         FormInput(
             insertAktivitasPertanianUiEvent = insertAktivitasPertanianUiState.insertAktivitasPertanianUiEvent,
+            formErrorState = insertAktivitasPertanianUiState.formErrorState,
             onValueChange = onSiswaValueChange,
             modifier = Modifier.fillMaxWidth()
         )
@@ -104,6 +131,7 @@ fun EntryBody(
 @Composable
 fun FormInput(
     insertAktivitasPertanianUiEvent: InsertAktivitasPertanianUiEvent,
+    formErrorState: FormErrorState,
     modifier: Modifier = Modifier,
     onValueChange: (InsertAktivitasPertanianUiEvent)->Unit = {},
     enabled: Boolean = true
@@ -118,7 +146,13 @@ fun FormInput(
             label = { Text("ID Aktivitas") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorState.idAktivitas != null,
+            supportingText = {
+                formErrorState.idAktivitas?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = insertAktivitasPertanianUiEvent.idTanaman,
@@ -126,7 +160,13 @@ fun FormInput(
             label = { Text("ID Tanaman") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorState.idTanaman != null,
+            supportingText = {
+                formErrorState.idTanaman?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = insertAktivitasPertanianUiEvent.idPekerja,
@@ -134,7 +174,13 @@ fun FormInput(
             label = { Text("ID Pekerja") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorState.idPekerja != null,
+            supportingText = {
+                formErrorState.idPekerja?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = insertAktivitasPertanianUiEvent.tanggalAktivitas,
@@ -142,7 +188,13 @@ fun FormInput(
             label = { Text("Tanggal Aktivitas") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorState.tanggalAktivitas != null,
+            supportingText = {
+                formErrorState.tanggalAktivitas?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = insertAktivitasPertanianUiEvent.deskripsiAktivitas,
@@ -150,7 +202,13 @@ fun FormInput(
             label = { Text("Deskripsi Aktivitas") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorState.deskripsiAktivitas != null,
+            supportingText = {
+                formErrorState.deskripsiAktivitas?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         if (enabled){
             Text(

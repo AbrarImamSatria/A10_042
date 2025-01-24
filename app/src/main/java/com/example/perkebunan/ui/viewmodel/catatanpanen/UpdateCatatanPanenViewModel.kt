@@ -14,17 +14,46 @@ class UpdateCatatanPanenViewModel(private val ctpn: CatatanPanenRepository) : Vi
         private set
 
     fun updateCatatanPanenUiState(updateCatatanPanenUiEvent: UpdateCatatanPanenUiEvent) {
-        uiState = UpdateCatatanPanenUiState(updateCatatanPanenUiEvent = updateCatatanPanenUiEvent)
+        uiState = uiState.copy(updateCatatanPanenUiEvent = updateCatatanPanenUiEvent)
     }
 
     suspend fun updateCtpn(idPanen: String) {
-        viewModelScope.launch {
+        if (validateFields()) {
             try {
                 ctpn.updateCatatanPanen(idPanen, uiState.updateCatatanPanenUiEvent.toCtpn())
+                uiState = uiState.copy(
+                    snackbarMessage = "Catatan Panen berhasil diperbarui",
+                    isSnackbarVisible = true
+                )
             } catch (e: Exception) {
+                uiState = uiState.copy(
+                    snackbarMessage = "Gagal memperbarui Catatan Panen: ${e.localizedMessage}",
+                    isSnackbarVisible = true
+                )
                 e.printStackTrace()
             }
         }
+    }
+
+    fun resetSnackbarState() {
+        uiState = uiState.copy(
+            isSnackbarVisible = false,
+            snackbarMessage = ""
+        )
+    }
+
+    fun validateFields(): Boolean {
+        val event = uiState.updateCatatanPanenUiEvent
+        val errorState = FormErrorStateCatatanPanen(
+            idTanaman = if (event.idTanaman.isNotEmpty()) null else "ID Tanaman tidak boleh kosong",
+            tanggalPanen = if (event.tanggalPanen.isNotEmpty()) null else "Tanggal Panen tidak boleh kosong",
+            jumlahPanen = if (event.jumlahPanen.isNotEmpty()) null else "Jumlah Panen tidak boleh kosong",
+            keterangan = if (event.keterangan.isNotEmpty()) null else "Keterangan tidak boleh kosong"
+        )
+
+        uiState = uiState.copy(formErrorState = errorState)
+
+        return errorState.isValid()
     }
 
     suspend fun getCatatanPanenbyIdPanen(idPanen: String) {
@@ -39,8 +68,24 @@ class UpdateCatatanPanenViewModel(private val ctpn: CatatanPanenRepository) : Vi
     }
 }
 
+data class FormErrorStateCatatanPanen(
+    val idTanaman: String? = null,
+    val tanggalPanen: String? = null,
+    val jumlahPanen: String? = null,
+    val keterangan: String? = null
+) {
+    fun isValid(): Boolean =
+        idTanaman == null &&
+                tanggalPanen == null &&
+                jumlahPanen == null &&
+                keterangan == null
+}
+
 data class UpdateCatatanPanenUiState(
-    val updateCatatanPanenUiEvent: UpdateCatatanPanenUiEvent = UpdateCatatanPanenUiEvent()
+    val updateCatatanPanenUiEvent: UpdateCatatanPanenUiEvent = UpdateCatatanPanenUiEvent(),
+    val formErrorState: FormErrorStateCatatanPanen = FormErrorStateCatatanPanen(),
+    val isSnackbarVisible: Boolean = false,
+    val snackbarMessage: String = ""
 )
 
 data class UpdateCatatanPanenUiEvent(

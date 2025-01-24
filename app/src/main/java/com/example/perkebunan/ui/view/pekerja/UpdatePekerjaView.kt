@@ -13,10 +13,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,10 +29,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.navigation.DestinasiNavigasi
 import com.example.perkebunan.ui.PenyediaViewModel
 import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
+import com.example.perkebunan.ui.viewmodel.pekerja.FormErrorStateUpdatePekerja
 import com.example.perkebunan.ui.viewmodel.pekerja.UpdatePekerjaUiEvent
 import com.example.perkebunan.ui.viewmodel.pekerja.UpdatePekerjaUiState
 import com.example.perkebunan.ui.viewmodel.pekerja.UpdatePekerjaViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 object DestinasiEditPekerja : DestinasiNavigasi {
     override val route = "Pekerja_edit/{idPekerja}"
@@ -46,8 +53,19 @@ fun EditScreenPekerja(
     viewModel: UpdatePekerjaViewModel = viewModel(factory = PenyediaViewModel.Factory),
     idPekerja: String
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    // Observe snackbar message
+    LaunchedEffect(viewModel.uiState.isSnackbarVisible, viewModel.uiState.snackbarMessage) {
+        viewModel.uiState.snackbarMessage.takeIf { it.isNotEmpty() }?.let { message ->
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(message)
+                viewModel.resetSnackbarState()
+            }
+        }
+    }
 
     LaunchedEffect(key1 = true) {
         coroutineScope.launch {
@@ -64,15 +82,21 @@ fun EditScreenPekerja(
                 scrollBehavior = scrollBehavior,
                 navigateUp = navigateBack
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
         EditBodyPekerja(
             updatePekerjaUiState = viewModel.uiState,
             onPkjValueChange = viewModel::updatePekerjaUiState,
             onSaveClick = {
                 coroutineScope.launch {
-                    viewModel.updatePkj(idPekerja)
-                    onNavigateBack()
+                    if (viewModel.validateFields()) {
+                        viewModel.updatePkj(idPekerja)
+                        delay(600)
+                        withContext(Dispatchers.Main) {
+                            onNavigateBack()
+                        }
+                    }
                 }
             },
             modifier = Modifier
@@ -97,6 +121,7 @@ fun EditBodyPekerja(
         FormInputPekerjaEdit(
             updatePekerjaUiEvent = updatePekerjaUiState.updatePekerjaUiEvent,
             onValueChange = onPkjValueChange,
+            formErrorStateUpdatePekerja = updatePekerjaUiState.formErrorState,
             modifier = Modifier.fillMaxWidth()
         )
         Button(
@@ -116,6 +141,7 @@ fun EditBodyPekerja(
 @Composable
 fun FormInputPekerjaEdit(
     updatePekerjaUiEvent: UpdatePekerjaUiEvent,
+    formErrorStateUpdatePekerja: FormErrorStateUpdatePekerja,
     modifier: Modifier = Modifier,
     onValueChange: (UpdatePekerjaUiEvent) -> Unit = {},
     enabled: Boolean = true
@@ -130,7 +156,13 @@ fun FormInputPekerjaEdit(
             label = { Text("Nama Pekerja") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorStateUpdatePekerja.namaPekerja != null,
+            supportingText = {
+                formErrorStateUpdatePekerja.namaPekerja?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = updatePekerjaUiEvent.jabatan,
@@ -138,7 +170,13 @@ fun FormInputPekerjaEdit(
             label = { Text("Jabatan Pekerja") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorStateUpdatePekerja.jabatan != null,
+            supportingText = {
+                formErrorStateUpdatePekerja.jabatan?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = updatePekerjaUiEvent.kontakPekerja,
@@ -146,14 +184,14 @@ fun FormInputPekerjaEdit(
             label = { Text("Kontak Pekerja") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorStateUpdatePekerja.kontakPekerja != null,
+            supportingText = {
+                formErrorStateUpdatePekerja.kontakPekerja?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
-        if (enabled) {
-            Text(
-                text = "Isi Semua Data!",
-                modifier = Modifier.padding(12.dp)
-            )
-        }
         Divider(
             thickness = 8.dp,
             modifier = Modifier.padding(12.dp)

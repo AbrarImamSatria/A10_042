@@ -13,10 +13,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,10 +29,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.navigation.DestinasiNavigasi
 import com.example.perkebunan.ui.PenyediaViewModel
 import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
+import com.example.perkebunan.ui.viewmodel.catatanpanen.FormErrorStateCatatanPanen
 import com.example.perkebunan.ui.viewmodel.catatanpanen.UpdateCatatanPanenUiEvent
 import com.example.perkebunan.ui.viewmodel.catatanpanen.UpdateCatatanPanenUiState
 import com.example.perkebunan.ui.viewmodel.catatanpanen.UpdateCatatanPanenViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 object DestinasiEditCatatanPanen : DestinasiNavigasi {
     override val route = "CatatanPanen_edit/{idPanen}"
@@ -46,8 +53,19 @@ fun EditScreenCatatanPanen(
     viewModel: UpdateCatatanPanenViewModel = viewModel(factory = PenyediaViewModel.Factory),
     idPanen: String
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    // Observe snackbar message
+    LaunchedEffect(viewModel.uiState.isSnackbarVisible, viewModel.uiState.snackbarMessage) {
+        viewModel.uiState.snackbarMessage.takeIf { it.isNotEmpty() }?.let { message ->
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(message)
+                viewModel.resetSnackbarState()
+            }
+        }
+    }
 
     LaunchedEffect(key1 = true) {
         coroutineScope.launch {
@@ -64,15 +82,21 @@ fun EditScreenCatatanPanen(
                 scrollBehavior = scrollBehavior,
                 navigateUp = navigateBack
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
         EditBodyCatatanPanen(
             updateCatatanPanenUiState = viewModel.uiState,
             onCtpnValueChange = viewModel::updateCatatanPanenUiState,
             onSaveClick = {
                 coroutineScope.launch {
-                    viewModel.updateCtpn(idPanen)
-                    onNavigateBack()
+                    if (viewModel.validateFields()) {
+                        viewModel.updateCtpn(idPanen)
+                        delay(600)
+                        withContext(Dispatchers.Main) {
+                            onNavigateBack()
+                        }
+                    }
                 }
             },
             modifier = Modifier
@@ -96,6 +120,7 @@ fun EditBodyCatatanPanen(
     ) {
         FormInputCatatanPanenEdit(
             updateCatatanPanenUiEvent = updateCatatanPanenUiState.updateCatatanPanenUiEvent,
+            formErrorStateCatatanPanen = updateCatatanPanenUiState.formErrorState,
             onValueChange = onCtpnValueChange,
             modifier = Modifier.fillMaxWidth()
         )
@@ -116,6 +141,7 @@ fun EditBodyCatatanPanen(
 @Composable
 fun FormInputCatatanPanenEdit(
     updateCatatanPanenUiEvent: UpdateCatatanPanenUiEvent,
+    formErrorStateCatatanPanen: FormErrorStateCatatanPanen,
     modifier: Modifier = Modifier,
     onValueChange: (UpdateCatatanPanenUiEvent) -> Unit = {},
     enabled: Boolean = true
@@ -130,7 +156,13 @@ fun FormInputCatatanPanenEdit(
             label = { Text("ID Tanaman") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorStateCatatanPanen.idTanaman != null,
+            supportingText = {
+                formErrorStateCatatanPanen.idTanaman?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = updateCatatanPanenUiEvent.tanggalPanen,
@@ -138,7 +170,13 @@ fun FormInputCatatanPanenEdit(
             label = { Text("Tanggal Panen") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorStateCatatanPanen.tanggalPanen != null,
+            supportingText = {
+                formErrorStateCatatanPanen.tanggalPanen?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = updateCatatanPanenUiEvent.jumlahPanen,
@@ -146,7 +184,13 @@ fun FormInputCatatanPanenEdit(
             label = { Text("Jumlah Panen") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorStateCatatanPanen.jumlahPanen != null,
+            supportingText = {
+                formErrorStateCatatanPanen.jumlahPanen?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = updateCatatanPanenUiEvent.keterangan,
@@ -154,14 +198,14 @@ fun FormInputCatatanPanenEdit(
             label = { Text("Keterangan") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorStateCatatanPanen.keterangan != null,
+            supportingText = {
+                formErrorStateCatatanPanen.keterangan?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
-        if (enabled) {
-            Text(
-                text = "Isi Semua Data!",
-                modifier = Modifier.padding(12.dp)
-            )
-        }
         Divider(
             thickness = 8.dp,
             modifier = Modifier.padding(12.dp)

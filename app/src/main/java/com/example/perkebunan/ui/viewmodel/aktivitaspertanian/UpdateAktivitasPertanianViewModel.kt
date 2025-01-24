@@ -14,17 +14,46 @@ class UpdateAktivitasPertanianViewModel(private val akt: AktivitasPertanianRepos
         private set
 
     fun updateAktivitasPertanianUiState(updateAktivitasPertanianUiEvent: UpdateAktivitasPertanianUiEvent) {
-        uiState = UpdateAktivitasPertanianUiState(updateAktivitasPertanianUiEvent = updateAktivitasPertanianUiEvent)
+        uiState = uiState.copy(updateAktivitasPertanianUiEvent = updateAktivitasPertanianUiEvent)
     }
 
     suspend fun updateAkt(idAktivitas: String) {
-        viewModelScope.launch {
+        if (validateFields()) {
             try {
                 akt.updateAktivitasPertanian(idAktivitas, uiState.updateAktivitasPertanianUiEvent.toAkt())
+                uiState = uiState.copy(
+                    snackbarMessage = "Aktivitas Pertanian berhasil diperbarui",
+                    isSnackbarVisible = true
+                )
             } catch (e: Exception) {
+                uiState = uiState.copy(
+                    snackbarMessage = "Gagal memperbarui Aktivitas Pertanian: ${e.localizedMessage}",
+                    isSnackbarVisible = true
+                )
                 e.printStackTrace()
             }
         }
+    }
+
+    fun resetSnackbarState() {
+        uiState = uiState.copy(
+            isSnackbarVisible = false,
+            snackbarMessage = ""
+        )
+    }
+
+    fun validateFields(): Boolean {
+        val event = uiState.updateAktivitasPertanianUiEvent
+        val errorState = FormErrorStateUpdate(
+            idTanaman = if (event.idTanaman.isNotEmpty()) null else "ID Tanaman tidak boleh kosong",
+            idPekerja = if (event.idPekerja.isNotEmpty()) null else "ID Pekerja tidak boleh kosong",
+            tanggalAktivitas = if (event.tanggalAktivitas.isNotEmpty()) null else "Tanggal Aktivitas tidak boleh kosong",
+            deskripsiAktivitas = if (event.deskripsiAktivitas.isNotEmpty()) null else "Deskripsi Aktivitas tidak boleh kosong"
+        )
+
+        uiState = uiState.copy(formErrorState = errorState)
+
+        return errorState.isValid()
     }
 
     suspend fun getAktivitasPertanianbyIdAktivitas(idAktivitas: String) {
@@ -39,8 +68,24 @@ class UpdateAktivitasPertanianViewModel(private val akt: AktivitasPertanianRepos
     }
 }
 
+data class FormErrorStateUpdate(
+    val idTanaman: String? = null,
+    val idPekerja: String? = null,
+    val tanggalAktivitas: String? = null,
+    val deskripsiAktivitas: String? = null
+) {
+    fun isValid(): Boolean =
+        idTanaman == null &&
+                idPekerja == null &&
+                tanggalAktivitas == null &&
+                deskripsiAktivitas == null
+}
+
 data class UpdateAktivitasPertanianUiState(
-    val updateAktivitasPertanianUiEvent: UpdateAktivitasPertanianUiEvent = UpdateAktivitasPertanianUiEvent()
+    val updateAktivitasPertanianUiEvent: UpdateAktivitasPertanianUiEvent = UpdateAktivitasPertanianUiEvent(),
+    val formErrorState: FormErrorStateUpdate = FormErrorStateUpdate(),
+    val isSnackbarVisible: Boolean = false,
+    val snackbarMessage: String = ""
 )
 
 data class UpdateAktivitasPertanianUiEvent(

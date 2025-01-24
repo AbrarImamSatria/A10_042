@@ -111,9 +111,17 @@ fun PengelolaHalaman(navController: NavHostController = rememberNavController())
                             inclusive = true
                         }
                     }
+                },
+                onNavigate = {
+                    navController.navigate("tanaman_detail/$idTanaman") {
+                        popUpTo("tanaman_detail/$idTanaman") {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
+
 
         composable(
             route = DestinasiEditTanaman.route,
@@ -214,13 +222,22 @@ fun PengelolaHalaman(navController: NavHostController = rememberNavController())
         }
 
         composable(DestinasiEntryCatatanPanen.route) {
-            EntryCtpnScreen(navigateBack = {
-                navController.navigate(DestinasiHomeCatatanPanen.route) {
-                    popUpTo(DestinasiHomeCatatanPanen.route) {
-                        inclusive = true
+            EntryCtpnScreen(
+                navigateBack = {
+                    navController.navigate(DestinasiHomeCatatanPanen.route) {
+                        popUpTo(DestinasiHomeCatatanPanen.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigate = {
+                    navController.navigate(DestinasiHomeCatatanPanen.route) {
+                        popUpTo(DestinasiHomeCatatanPanen.route) {
+                            inclusive = true
+                        }
                     }
                 }
-            })
+            )
         }
 
         composable(
@@ -271,13 +288,22 @@ fun PengelolaHalaman(navController: NavHostController = rememberNavController())
         }
 
         composable(DestinasiEntryAktivitasPertanian.route) {
-            EntryAktScreen(navigateBack = {
-                navController.navigate(DestinasiHomeAktivitasPertanian.route) {
-                    popUpTo(DestinasiHomeAktivitasPertanian.route) {
-                        inclusive = true
+            EntryAktScreen(
+                navigateBack = {
+                    navController.navigate(DestinasiHomeAktivitasPertanian.route) {
+                        popUpTo(DestinasiHomeAktivitasPertanian.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigate = {
+                    navController.navigate(DestinasiHomeAktivitasPertanian.route) {
+                        popUpTo(DestinasiHomeAktivitasPertanian.route) {
+                            inclusive = true
+                        }
                     }
                 }
-            })
+            )
         }
 
         composable(

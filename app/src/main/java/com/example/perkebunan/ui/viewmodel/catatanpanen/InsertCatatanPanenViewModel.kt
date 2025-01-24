@@ -9,27 +9,82 @@ import com.example.perkebunan.model.CatatanPanen
 import com.example.perkebunan.repository.CatatanPanenRepository
 import kotlinx.coroutines.launch
 
-class InsertCatatanPanenViewModel (private val ctpn: CatatanPanenRepository): ViewModel(){
+class InsertCatatanPanenViewModel(private val ctpn: CatatanPanenRepository) : ViewModel() {
     var uiState by mutableStateOf(InsertCatatanPanenUiState())
         private set
 
-    fun updateInsertCtpnState(insertCatatanPanenUiEvent: InsertCatatanPanenUiEvent){
-        uiState = InsertCatatanPanenUiState(insertCatatanPanenUiEvent = insertCatatanPanenUiEvent)
+    fun updateInsertCtpnState(insertCatatanPanenUiEvent: InsertCatatanPanenUiEvent) {
+        uiState = uiState.copy(insertCatatanPanenUiEvent = insertCatatanPanenUiEvent)
     }
 
-    suspend fun insertCtpn(){
-        viewModelScope.launch {
-            try {
-                ctpn.insertCatatanPanen(uiState.insertCatatanPanenUiEvent.toCtpn())
-            }catch (e:Exception){
-                e.printStackTrace()
+    fun insertCtpn() {
+        // Validate fields before attempting to insert
+        if (validateFields()) {
+            viewModelScope.launch {
+                try {
+                    ctpn.insertCatatanPanen(uiState.insertCatatanPanenUiEvent.toCtpn())
+                    // Update UI state to show success snackbar
+                    uiState = uiState.copy(
+                        snackbarMessage = "Catatan Panen berhasil disimpan",
+                        isSnackbarVisible = true
+                    )
+                } catch (e: Exception) {
+                    // Update UI state to show error snackbar
+                    uiState = uiState.copy(
+                        snackbarMessage = "Gagal menyimpan Catatan Panen: ${e.localizedMessage}",
+                        isSnackbarVisible = true
+                    )
+                    e.printStackTrace()
+                }
             }
         }
     }
+
+    // Reset snackbar visibility after showing
+    fun resetSnackbarState() {
+        uiState = uiState.copy(
+            isSnackbarVisible = false,
+            snackbarMessage = ""
+        )
+    }
+
+    fun validateFields(): Boolean {
+        val event = uiState.insertCatatanPanenUiEvent
+        val errorState = FormErrorState(
+            idPanen = if (event.idPanen.isNotEmpty()) null else "ID Panen tidak boleh kosong",
+            idTanaman = if (event.idTanaman.isNotEmpty()) null else "ID Tanaman tidak boleh kosong",
+            tanggalPanen = if (event.tanggalPanen.isNotEmpty()) null else "Tanggal Panen tidak boleh kosong",
+            jumlahPanen = if (event.jumlahPanen.isNotEmpty()) null else "Jumlah Panen tidak boleh kosong",
+            keterangan = if (event.keterangan.isNotEmpty()) null else "Keterangan tidak boleh kosong"
+        )
+
+        // Update UI state with error state
+        uiState = uiState.copy(formErrorState = errorState)
+
+        return errorState.isValid()
+    }
+}
+
+data class FormErrorState(
+    val idPanen: String? = null,
+    val idTanaman: String? = null,
+    val tanggalPanen: String? = null,
+    val jumlahPanen: String? = null,
+    val keterangan: String? = null
+) {
+    fun isValid(): Boolean =
+        idPanen == null &&
+                idTanaman == null &&
+                tanggalPanen == null &&
+                jumlahPanen == null &&
+                keterangan == null
 }
 
 data class InsertCatatanPanenUiState(
-    val insertCatatanPanenUiEvent: InsertCatatanPanenUiEvent = InsertCatatanPanenUiEvent()
+    val insertCatatanPanenUiEvent: InsertCatatanPanenUiEvent = InsertCatatanPanenUiEvent(),
+    val formErrorState: FormErrorState = FormErrorState(),
+    val isSnackbarVisible: Boolean = false,
+    val snackbarMessage: String = ""
 )
 
 data class InsertCatatanPanenUiEvent(
