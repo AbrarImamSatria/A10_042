@@ -1,20 +1,18 @@
 package com.example.perkebunan.ui.view.tanaman
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -32,13 +30,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.R
@@ -60,6 +55,7 @@ object DestinasiDetailTanaman : DestinasiNavigasi {
 fun DetailScreenTanaman(
     navigateBack: () -> Unit,
     navigateToEdit: (String) -> Unit,
+    navigateToCatatanPanen: (String) -> Unit,
     modifier: Modifier = Modifier,
     idTanaman: String,
     viewModel: DetailTanamanViewModel = viewModel(factory = PenyediaViewModel.Factory)
@@ -81,6 +77,31 @@ fun DetailScreenTanaman(
                 onRefresh = { viewModel.getTanamanbyIdTanaman(idTanaman) },
             )
         },
+        floatingActionButton = {
+            Box(modifier = Modifier.padding(bottom = 24.dp)) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.wrapContentSize()
+                ) {
+                    Text(
+                        text = "Tambah Panen",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    FloatingActionButton(
+                        onClick = { navigateToCatatanPanen(idTanaman) },
+                        containerColor = Color(0xFF2CAC7C),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                }
+            }
+        }
     ) { innerPadding ->
         DetailTanamanStatus(
             detailTanamanUiState = viewModel.tnmDetailUiState,
