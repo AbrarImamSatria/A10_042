@@ -38,15 +38,37 @@ object PenyediaViewModel{
 
         // VIEWMODEL CATATAN PANEN
         initializer { HomeCatatanPanenViewModel(aplikasiPerkebunan().container.catatanPanenRepository) }
-        initializer { InsertCatatanPanenViewModel(aplikasiPerkebunan().container.catatanPanenRepository) }
+        initializer {
+            InsertCatatanPanenViewModel(
+                aplikasiPerkebunan().container.catatanPanenRepository,
+                aplikasiPerkebunan().container.tanamanRepository
+            )
+        }
         initializer { DetailCatatanPanenViewModel(aplikasiPerkebunan().container.catatanPanenRepository) }
-        initializer { UpdateCatatanPanenViewModel(aplikasiPerkebunan().container.catatanPanenRepository) }
+        initializer {
+            UpdateCatatanPanenViewModel(
+                aplikasiPerkebunan().container.catatanPanenRepository,
+                aplikasiPerkebunan().container.tanamanRepository
+            )
+        }
 
         // VIEWMODEL AKTIVITAS PERTANIAN
         initializer { HomeAktivitasPertanianViewModel(aplikasiPerkebunan().container.aktivitasPertanianRepository) }
-        initializer { InsertAktivitasPertanianViewModel(aplikasiPerkebunan().container.aktivitasPertanianRepository) }
+        initializer {
+            InsertAktivitasPertanianViewModel(
+                aplikasiPerkebunan().container.aktivitasPertanianRepository,
+                aplikasiPerkebunan().container.tanamanRepository,
+                aplikasiPerkebunan().container.pekerjaRepository
+            )
+        }
         initializer { DetailAktivitasPertanianViewModel(aplikasiPerkebunan().container.aktivitasPertanianRepository) }
-        initializer { UpdateAktivitasPertanianViewModel(aplikasiPerkebunan().container.aktivitasPertanianRepository) }
+        initializer {
+            UpdateAktivitasPertanianViewModel(
+                aplikasiPerkebunan().container.aktivitasPertanianRepository,
+                aplikasiPerkebunan().container.tanamanRepository,
+                aplikasiPerkebunan().container.pekerjaRepository
+            )
+        }
     }
 
     fun CreationExtras.aplikasiPerkebunan():PerkebunanApplications =
