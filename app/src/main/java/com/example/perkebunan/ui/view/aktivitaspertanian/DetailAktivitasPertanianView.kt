@@ -174,9 +174,9 @@ fun DetailAktivitasPertanianLayout(
 
                 DetailItem(label = "ID Aktivitas :", value = aktivitasPertanian.idAktivitas)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
-                DetailItem(label = "ID Tanaman :", value = aktivitasPertanian.idTanaman)
+                DetailItem(label = "Nama Tanaman :", value = aktivitasPertanian.idTanaman)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
-                DetailItem(label = "ID Pekerja :", value = aktivitasPertanian.idPekerja)
+                DetailItem(label = "Nama Pekerja :", value = aktivitasPertanian.idPekerja)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
                 DetailItem(label = "Tanggal Aktivitas :", value = aktivitasPertanian.tanggalAktivitas)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)

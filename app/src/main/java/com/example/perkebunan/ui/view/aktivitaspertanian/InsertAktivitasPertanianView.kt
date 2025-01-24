@@ -33,6 +33,7 @@ import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.FormErrorState
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.InsertAktivitasPertanianUiEvent
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.InsertAktivitasPertanianUiState
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.InsertAktivitasPertanianViewModel
+import com.example.perkebunan.ui.widget.DynamicSelectTextField
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -94,7 +95,8 @@ fun EntryAktScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            viewModel = viewModel
         )
     }
 }
@@ -104,17 +106,19 @@ fun EntryBody(
     insertAktivitasPertanianUiState: InsertAktivitasPertanianUiState,
     onSiswaValueChange: (InsertAktivitasPertanianUiEvent) -> Unit,
     onSaveClick: () -> Unit,
-    modifier: Modifier = Modifier
-){
-    Column (
+    modifier: Modifier = Modifier,
+    viewModel: InsertAktivitasPertanianViewModel
+) {
+    Column(
         verticalArrangement = Arrangement.spacedBy(18.dp),
         modifier = modifier.padding(12.dp)
-    ){
+    ) {
         FormInput(
             insertAktivitasPertanianUiEvent = insertAktivitasPertanianUiState.insertAktivitasPertanianUiEvent,
             formErrorState = insertAktivitasPertanianUiState.formErrorState,
             onValueChange = onSiswaValueChange,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            viewModel = viewModel
         )
         Button(
             onClick = onSaveClick,
@@ -127,19 +131,19 @@ fun EntryBody(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormInput(
     insertAktivitasPertanianUiEvent: InsertAktivitasPertanianUiEvent,
     formErrorState: FormErrorState,
     modifier: Modifier = Modifier,
-    onValueChange: (InsertAktivitasPertanianUiEvent)->Unit = {},
-    enabled: Boolean = true
+    onValueChange: (InsertAktivitasPertanianUiEvent) -> Unit = {},
+    enabled: Boolean = true,
+    viewModel: InsertAktivitasPertanianViewModel
 ) {
-    Column (
+    Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
-    ){
+    ) {
         OutlinedTextField(
             value = insertAktivitasPertanianUiEvent.idAktivitas,
             onValueChange = {onValueChange(insertAktivitasPertanianUiEvent.copy(idAktivitas = it))},
@@ -148,40 +152,31 @@ fun FormInput(
             enabled = enabled,
             singleLine = true,
             isError = formErrorState.idAktivitas != null,
-            supportingText = {
-                formErrorState.idAktivitas?.let {
-                    Text(text = it, color = MaterialTheme.colorScheme.error)
-                }
-            }
+            supportingText = { formErrorState.idAktivitas?.let { Text(text = it, color = MaterialTheme.colorScheme.error) } }
         )
-        OutlinedTextField(
-            value = insertAktivitasPertanianUiEvent.idTanaman,
-            onValueChange = {onValueChange(insertAktivitasPertanianUiEvent.copy(idTanaman = it))},
-            label = { Text("ID Tanaman") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true,
+
+        DynamicSelectTextField(
+            selectedValue = insertAktivitasPertanianUiEvent.idTanaman,
+            options = viewModel.tanamanList.map { it.namaTanaman },
+            label = "Pilih Tanaman",
+            onValueChangedEvent = { selectedNama ->
+                onValueChange(insertAktivitasPertanianUiEvent.copy(idTanaman = selectedNama))
+            },
             isError = formErrorState.idTanaman != null,
-            supportingText = {
-                formErrorState.idTanaman?.let {
-                    Text(text = it, color = MaterialTheme.colorScheme.error)
-                }
-            }
+            errorMessage = formErrorState.idTanaman
         )
-        OutlinedTextField(
-            value = insertAktivitasPertanianUiEvent.idPekerja,
-            onValueChange = {onValueChange(insertAktivitasPertanianUiEvent.copy(idPekerja = it))},
-            label = { Text("ID Pekerja") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true,
+
+        DynamicSelectTextField(
+            selectedValue = insertAktivitasPertanianUiEvent.idPekerja,
+            options = viewModel.pekerjaList.map { it.namaPekerja },
+            label = "Pilih Pekerja",
+            onValueChangedEvent = { selectedNama ->
+                onValueChange(insertAktivitasPertanianUiEvent.copy(idPekerja = selectedNama))
+            },
             isError = formErrorState.idPekerja != null,
-            supportingText = {
-                formErrorState.idPekerja?.let {
-                    Text(text = it, color = MaterialTheme.colorScheme.error)
-                }
-            }
+            errorMessage = formErrorState.idPekerja
         )
+
         OutlinedTextField(
             value = insertAktivitasPertanianUiEvent.tanggalAktivitas,
             onValueChange = {onValueChange(insertAktivitasPertanianUiEvent.copy(tanggalAktivitas = it))},
