@@ -174,7 +174,7 @@ fun DetailCatatanPanenLayout(
 
                 DetailItem(label = "ID Panen :", value = catatanPanen.idPanen)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
-                DetailItem(label = "ID Tanaman :", value = catatanPanen.idTanaman)
+                DetailItem(label = "Nama Tanaman :", value = catatanPanen.idTanaman)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
                 DetailItem(label = "Tanggal Panen :", value = catatanPanen.tanggalPanen)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)

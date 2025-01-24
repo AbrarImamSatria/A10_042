@@ -29,10 +29,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.navigation.DestinasiNavigasi
 import com.example.perkebunan.ui.PenyediaViewModel
 import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
+import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.InsertAktivitasPertanianViewModel
 import com.example.perkebunan.ui.viewmodel.catatanpanen.FormErrorState
 import com.example.perkebunan.ui.viewmodel.catatanpanen.InsertCatatanPanenUiEvent
 import com.example.perkebunan.ui.viewmodel.catatanpanen.InsertCatatanPanenUiState
 import com.example.perkebunan.ui.viewmodel.catatanpanen.InsertCatatanPanenViewModel
+import com.example.perkebunan.ui.widget.DynamicSelectTextField
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -94,7 +96,8 @@ fun EntryCtpnScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            viewModel = viewModel
         )
     }
 }
@@ -104,6 +107,7 @@ fun EntryBody(
     insertCatatanPanenUiState: InsertCatatanPanenUiState,
     onSiswaValueChange: (InsertCatatanPanenUiEvent) -> Unit,
     onSaveClick: () -> Unit,
+    viewModel: InsertCatatanPanenViewModel,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -114,7 +118,8 @@ fun EntryBody(
             insertCatatanPanenUiEvent = insertCatatanPanenUiState.insertCatatanPanenUiEvent,
             formErrorState = insertCatatanPanenUiState.formErrorState,
             onValueChange = onSiswaValueChange,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            viewModel = viewModel
         )
         Button(
             onClick = onSaveClick,
@@ -135,7 +140,8 @@ fun FormInput(
     formErrorState: FormErrorState,
     modifier: Modifier = Modifier,
     onValueChange: (InsertCatatanPanenUiEvent) -> Unit = {},
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    viewModel: InsertCatatanPanenViewModel
 ) {
     Column(
         modifier = modifier,
@@ -155,20 +161,18 @@ fun FormInput(
                 }
             }
         )
-        OutlinedTextField(
-            value = insertCatatanPanenUiEvent.idTanaman,
-            onValueChange = { onValueChange(insertCatatanPanenUiEvent.copy(idTanaman = it)) },
-            label = { Text("ID Tanaman") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true,
+
+        DynamicSelectTextField(
+            selectedValue = insertCatatanPanenUiEvent.idTanaman,
+            options = viewModel.tanamanList.map { it.namaTanaman },
+            label = "Pilih Tanaman",
+            onValueChangedEvent = { selectedNama ->
+                onValueChange(insertCatatanPanenUiEvent.copy(idTanaman = selectedNama))
+            },
             isError = formErrorState.idTanaman != null,
-            supportingText = {
-                formErrorState.idTanaman?.let {
-                    Text(text = it, color = MaterialTheme.colorScheme.error)
-                }
-            }
+            errorMessage = formErrorState.idTanaman
         )
+
         OutlinedTextField(
             value = insertCatatanPanenUiEvent.tanggalPanen,
             onValueChange = { onValueChange(insertCatatanPanenUiEvent.copy(tanggalPanen = it)) },
@@ -183,6 +187,7 @@ fun FormInput(
                 }
             }
         )
+
         OutlinedTextField(
             value = insertCatatanPanenUiEvent.jumlahPanen,
             onValueChange = { onValueChange(insertCatatanPanenUiEvent.copy(jumlahPanen = it)) },
@@ -197,6 +202,7 @@ fun FormInput(
                 }
             }
         )
+
         OutlinedTextField(
             value = insertCatatanPanenUiEvent.keterangan,
             onValueChange = { onValueChange(insertCatatanPanenUiEvent.copy(keterangan = it)) },
