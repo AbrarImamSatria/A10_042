@@ -33,6 +33,7 @@ import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.FormErrorStateUpda
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.UpdateAktivitasPertanianUiEvent
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.UpdateAktivitasPertanianUiState
 import com.example.perkebunan.ui.viewmodel.aktivitaspertanian.UpdateAktivitasPertanianViewModel
+import com.example.perkebunan.ui.widget.DynamicSelectTextField
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -102,7 +103,8 @@ fun EditScreenAktivitasPertanian(
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            viewModel = viewModel
         )
     }
 }
@@ -112,7 +114,8 @@ fun EditBodyAktivitasPertanian(
     updateAktivitasPertanianUiState: UpdateAktivitasPertanianUiState,
     onAktValueChange: (UpdateAktivitasPertanianUiEvent) -> Unit,
     onSaveClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: UpdateAktivitasPertanianViewModel
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(18.dp),
@@ -122,7 +125,8 @@ fun EditBodyAktivitasPertanian(
             updateAktivitasPertanianUiEvent = updateAktivitasPertanianUiState.updateAktivitasPertanianUiEvent,
             formErrorStateUpdate = updateAktivitasPertanianUiState.formErrorState,
             onValueChange = onAktValueChange,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            viewModel = viewModel
         )
         Button(
             onClick = onSaveClick,
@@ -145,40 +149,35 @@ fun FormInputAktivitasPertanianEdit(
     formErrorStateUpdate: FormErrorStateUpdate,
     modifier: Modifier = Modifier,
     onValueChange: (UpdateAktivitasPertanianUiEvent) -> Unit = {},
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    viewModel: UpdateAktivitasPertanianViewModel
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        OutlinedTextField(
-            value = updateAktivitasPertanianUiEvent.idTanaman,
-            onValueChange = { onValueChange(updateAktivitasPertanianUiEvent.copy(idTanaman = it)) },
-            label = { Text("ID Tanaman") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true,
+        DynamicSelectTextField(
+            selectedValue = updateAktivitasPertanianUiEvent.idTanaman,
+            options = viewModel.tanamanList.map { it.namaTanaman },
+            label = "Pilih Tanaman",
+            onValueChangedEvent = { selectedNama ->
+                onValueChange(updateAktivitasPertanianUiEvent.copy(idTanaman = selectedNama))
+            },
             isError = formErrorStateUpdate.idTanaman != null,
-            supportingText = {
-                formErrorStateUpdate.idTanaman?.let {
-                    Text(text = it, color = MaterialTheme.colorScheme.error)
-                }
-            }
+            errorMessage = formErrorStateUpdate.idTanaman
         )
-        OutlinedTextField(
-            value = updateAktivitasPertanianUiEvent.idPekerja,
-            onValueChange = { onValueChange(updateAktivitasPertanianUiEvent.copy(idPekerja = it)) },
-            label = { Text("ID Pekerja") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true,
+
+        DynamicSelectTextField(
+            selectedValue = updateAktivitasPertanianUiEvent.idPekerja,
+            options = viewModel.pekerjaList.map { it.namaPekerja },
+            label = "Pilih Pekerja",
+            onValueChangedEvent = { selectedNama ->
+                onValueChange(updateAktivitasPertanianUiEvent.copy(idPekerja = selectedNama))
+            },
             isError = formErrorStateUpdate.idPekerja != null,
-            supportingText = {
-                formErrorStateUpdate.idPekerja?.let {
-                    Text(text = it, color = MaterialTheme.colorScheme.error)
-                }
-            }
+            errorMessage = formErrorStateUpdate.idPekerja
         )
+
         OutlinedTextField(
             value = updateAktivitasPertanianUiEvent.tanggalAktivitas,
             onValueChange = { onValueChange(updateAktivitasPertanianUiEvent.copy(tanggalAktivitas = it)) },
@@ -193,6 +192,7 @@ fun FormInputAktivitasPertanianEdit(
                 }
             }
         )
+
         OutlinedTextField(
             value = updateAktivitasPertanianUiEvent.deskripsiAktivitas,
             onValueChange = { onValueChange(updateAktivitasPertanianUiEvent.copy(deskripsiAktivitas = it)) },

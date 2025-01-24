@@ -6,12 +6,41 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.perkebunan.model.AktivitasPertanian
+import com.example.perkebunan.model.Pekerja
+import com.example.perkebunan.model.Tanaman
 import com.example.perkebunan.repository.AktivitasPertanianRepository
+import com.example.perkebunan.repository.PekerjaRepository
+import com.example.perkebunan.repository.TanamanRepository
 import kotlinx.coroutines.launch
 
-class UpdateAktivitasPertanianViewModel(private val akt: AktivitasPertanianRepository) : ViewModel() {
+class UpdateAktivitasPertanianViewModel(
+    private val akt: AktivitasPertanianRepository,
+    private val tanamanRepository: TanamanRepository,
+    private val pekerjaRepository: PekerjaRepository
+) : ViewModel() {
     var uiState by mutableStateOf(UpdateAktivitasPertanianUiState())
         private set
+    var tanamanList by mutableStateOf(emptyList<Tanaman>())
+        private set
+    var pekerjaList by mutableStateOf(emptyList<Pekerja>())
+        private set
+
+    init {
+        fetchTanamanList()
+        fetchPekerjaList()
+    }
+
+    private fun fetchTanamanList() {
+        viewModelScope.launch {
+            tanamanList = tanamanRepository.getTanaman()
+        }
+    }
+
+    private fun fetchPekerjaList() {
+        viewModelScope.launch {
+            pekerjaList = pekerjaRepository.getPekerja()
+        }
+    }
 
     fun updateAktivitasPertanianUiState(updateAktivitasPertanianUiEvent: UpdateAktivitasPertanianUiEvent) {
         uiState = uiState.copy(updateAktivitasPertanianUiEvent = updateAktivitasPertanianUiEvent)
@@ -45,8 +74,8 @@ class UpdateAktivitasPertanianViewModel(private val akt: AktivitasPertanianRepos
     fun validateFields(): Boolean {
         val event = uiState.updateAktivitasPertanianUiEvent
         val errorState = FormErrorStateUpdate(
-            idTanaman = if (event.idTanaman.isNotEmpty()) null else "ID Tanaman tidak boleh kosong",
-            idPekerja = if (event.idPekerja.isNotEmpty()) null else "ID Pekerja tidak boleh kosong",
+            idTanaman = if (event.idTanaman.isNotEmpty()) null else "Tanaman tidak boleh kosong",
+            idPekerja = if (event.idPekerja.isNotEmpty()) null else "Pekerja tidak boleh kosong",
             tanggalAktivitas = if (event.tanggalAktivitas.isNotEmpty()) null else "Tanggal Aktivitas tidak boleh kosong",
             deskripsiAktivitas = if (event.deskripsiAktivitas.isNotEmpty()) null else "Deskripsi Aktivitas tidak boleh kosong"
         )
