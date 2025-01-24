@@ -62,13 +62,22 @@ fun PengelolaHalaman(navController: NavHostController = rememberNavController())
         }
 
         composable(DestinasiEntryTanaman.route) {
-            EntryTnmScreen(navigateBack = {
-                navController.navigate(DestinasiHomeTanaman.route) {
-                    popUpTo(DestinasiHomeTanaman.route) {
-                        inclusive = true
+            EntryTnmScreen(
+                navigateBack = {
+                    navController.navigate(DestinasiHomeTanaman.route) {
+                        popUpTo(DestinasiHomeTanaman.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigate = {
+                    navController.navigate(DestinasiHomeTanaman.route) {
+                        popUpTo(DestinasiHomeTanaman.route) {
+                            inclusive = true
+                        }
                     }
                 }
-            })
+            )
         }
 
         composable(
@@ -84,8 +93,24 @@ fun PengelolaHalaman(navController: NavHostController = rememberNavController())
                 navigateToEdit = { id ->
                     navController.navigate("tanaman_edit/$id")
                 },
-                navigateToInsertCatatanPanen = { idTanaman ->
-                    navController.navigate("${DestinasiEntryCatatanPanen.route}?idTanaman=$idTanaman")
+                navigateToCatatanPanen = { id ->
+                    navController.navigate("${DestinasiEntryCatatanPanen.route}/$id")
+                }
+            )
+        }
+
+        composable(
+            route = "${DestinasiEntryCatatanPanen.route}/{idTanaman}",
+            arguments = listOf(navArgument("idTanaman") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val idTanaman = backStackEntry.arguments?.getString("idTanaman") ?: ""
+            EntryCtpnScreen(
+                navigateBack = {
+                    navController.navigate("tanaman_detail/$idTanaman") {
+                        popUpTo("tanaman_detail/$idTanaman") {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
@@ -123,13 +148,22 @@ fun PengelolaHalaman(navController: NavHostController = rememberNavController())
         }
 
         composable(DestinasiEntryPekerja.route) {
-            EntryPkjScreen(navigateBack = {
-                navController.navigate(DestinasiHomePekerja.route) {
-                    popUpTo(DestinasiHomePekerja.route) {
-                        inclusive = true
+            EntryPkjScreen(
+                navigateBack = {
+                    navController.navigate(DestinasiHomePekerja.route) {
+                        popUpTo(DestinasiHomePekerja.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigate = {
+                    navController.navigate(DestinasiHomePekerja.route) {
+                        popUpTo(DestinasiHomePekerja.route) {
+                            inclusive = true
+                        }
                     }
                 }
-            })
+            )
         }
 
         composable(

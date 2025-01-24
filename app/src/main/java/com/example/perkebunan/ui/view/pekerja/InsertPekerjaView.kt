@@ -13,9 +13,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,11 +29,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perkebunan.navigation.DestinasiNavigasi
 import com.example.perkebunan.ui.PenyediaViewModel
 import com.example.perkebunan.ui.customwidget.CostumeTopAppBar
+import com.example.perkebunan.ui.viewmodel.pekerja.FormErrorState
 import com.example.perkebunan.ui.viewmodel.pekerja.InsertPekerjaUiEvent
 import com.example.perkebunan.ui.viewmodel.pekerja.InsertPekerjaUiState
 import com.example.perkebunan.ui.viewmodel.pekerja.InsertPekerjaViewModel
 import com.example.perkebunan.ui.viewmodel.tanaman.InsertTanamanViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 object DestinasiEntryPekerja: DestinasiNavigasi {
@@ -41,13 +49,25 @@ object DestinasiEntryPekerja: DestinasiNavigasi {
 @Composable
 fun EntryPkjScreen(
     navigateBack: () -> Unit,
+    onNavigate: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: InsertPekerjaViewModel = viewModel(factory = PenyediaViewModel.Factory)
-){
+) {
+    val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    Scaffold (
+    // Observe snackbar message
+    LaunchedEffect(viewModel.uiState.isSnackbarVisible, viewModel.uiState.snackbarMessage) {
+        viewModel.uiState.snackbarMessage.takeIf { it.isNotEmpty() }?.let { message ->
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(message)
+                viewModel.resetSnackbarState()
+            }
+        }
+    }
+
+    Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CostumeTopAppBar(
@@ -56,15 +76,21 @@ fun EntryPkjScreen(
                 scrollBehavior = scrollBehavior,
                 navigateUp = navigateBack
             )
-        }
-    ){ innerPadding ->
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { innerPadding ->
         EntryBody(
             insertPekerjaUiState = viewModel.uiState,
             onSiswaValueChange = viewModel::updateInsertPkjState,
             onSaveClick = {
                 coroutineScope.launch {
-                    viewModel.insertPkj()
-                    navigateBack()
+                    if (viewModel.validateFields()) {
+                        viewModel.insertPkj()
+                        delay(600)
+                        withContext(Dispatchers.Main) {
+                            onNavigate()
+                        }
+                    }
                 }
             },
             modifier = Modifier
@@ -81,13 +107,14 @@ fun EntryBody(
     onSiswaValueChange: (InsertPekerjaUiEvent) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
-){
-    Column (
+) {
+    Column(
         verticalArrangement = Arrangement.spacedBy(18.dp),
         modifier = modifier.padding(12.dp)
-    ){
+    ) {
         FormInput(
             insertPekerjaUiEvent = insertPekerjaUiState.insertPekerjaUiEvent,
+            formErrorState = insertPekerjaUiState.formErrorState,
             onValueChange = onSiswaValueChange,
             modifier = Modifier.fillMaxWidth()
         )
@@ -106,52 +133,71 @@ fun EntryBody(
 @Composable
 fun FormInput(
     insertPekerjaUiEvent: InsertPekerjaUiEvent,
+    formErrorState: FormErrorState,
     modifier: Modifier = Modifier,
-    onValueChange: (InsertPekerjaUiEvent)->Unit = {},
+    onValueChange: (InsertPekerjaUiEvent) -> Unit = {},
     enabled: Boolean = true
 ) {
-    Column (
+    Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
-    ){
+    ) {
         OutlinedTextField(
             value = insertPekerjaUiEvent.idPekerja,
-            onValueChange = {onValueChange(insertPekerjaUiEvent.copy(idPekerja = it))},
+            onValueChange = { onValueChange(insertPekerjaUiEvent.copy(idPekerja = it)) },
             label = { Text("ID Pekerja") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorState.idPekerja != null,
+            supportingText = {
+                formErrorState.idPekerja?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = insertPekerjaUiEvent.namaPekerja,
-            onValueChange = {onValueChange(insertPekerjaUiEvent.copy(namaPekerja = it))},
+            onValueChange = { onValueChange(insertPekerjaUiEvent.copy(namaPekerja = it)) },
             label = { Text("Nama Pekerja") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorState.namaPekerja != null,
+            supportingText = {
+                formErrorState.namaPekerja?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = insertPekerjaUiEvent.jabatan,
-            onValueChange = {onValueChange(insertPekerjaUiEvent.copy(jabatan = it))},
+            onValueChange = { onValueChange(insertPekerjaUiEvent.copy(jabatan = it)) },
             label = { Text("Jabatan Pekerja") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorState.jabatan != null,
+            supportingText = {
+                formErrorState.jabatan?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
         OutlinedTextField(
             value = insertPekerjaUiEvent.kontakPekerja,
-            onValueChange = {onValueChange(insertPekerjaUiEvent.copy(kontakPekerja = it))},
+            onValueChange = { onValueChange(insertPekerjaUiEvent.copy(kontakPekerja = it)) },
             label = { Text("Kontak Pekerja") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = formErrorState.kontakPekerja != null,
+            supportingText = {
+                formErrorState.kontakPekerja?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
-        if (enabled){
-            Text(
-                text = "Isi Semua Data!",
-                modifier = Modifier.padding(12.dp)
-            )
-        }
         Divider(
             thickness = 8.dp,
             modifier = Modifier.padding((12.dp))

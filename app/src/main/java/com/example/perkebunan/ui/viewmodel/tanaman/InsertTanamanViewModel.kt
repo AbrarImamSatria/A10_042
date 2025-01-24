@@ -9,37 +9,89 @@ import com.example.perkebunan.model.Tanaman
 import com.example.perkebunan.repository.TanamanRepository
 import kotlinx.coroutines.launch
 
-class InsertTanamanViewModel (private val tnm: TanamanRepository): ViewModel(){
+class InsertTanamanViewModel(private val tnm: TanamanRepository) : ViewModel() {
     var uiState by mutableStateOf(InsertTanamanUiState())
         private set
 
-    fun updateInsertTnmState(insertTanamanUiEvent: InsertTanamanUiEvent){
-        uiState = InsertTanamanUiState(insertTanamanUiEvent = insertTanamanUiEvent)
+    fun updateInsertTnmState(insertTanamanUiEvent: InsertTanamanUiEvent) {
+        uiState = uiState.copy(insertTanamanUiEvent = insertTanamanUiEvent)
     }
 
-    suspend fun insertTnm(){
-        viewModelScope.launch {
-            try {
-                tnm.insertTanaman(uiState.insertTanamanUiEvent.toTnm())
-            }catch (e:Exception){
-                e.printStackTrace()
+    fun insertTnm() {
+        // Validate fields before attempting to insert
+        if (validateFields()) {
+            viewModelScope.launch {
+                try {
+                    tnm.insertTanaman(uiState.insertTanamanUiEvent.toTnm())
+                    // Update UI state to show success snackbar
+                    uiState = uiState.copy(
+                        snackbarMessage = "Tanaman berhasil disimpan",
+                        isSnackbarVisible = true
+                    )
+                } catch (e: Exception) {
+                    // Update UI state to show error snackbar
+                    uiState = uiState.copy(
+                        snackbarMessage = "Gagal menyimpan Tanaman: ${e.localizedMessage}",
+                        isSnackbarVisible = true
+                    )
+                    e.printStackTrace()
+                }
             }
         }
     }
+
+    // Reset snackbar visibility after showing
+    fun resetSnackbarState() {
+        uiState = uiState.copy(
+            isSnackbarVisible = false,
+            snackbarMessage = ""
+        )
+    }
+
+    fun validateFields(): Boolean {
+        val event = uiState.insertTanamanUiEvent
+        val errorState = FormErrorState(
+            idTanaman = if (event.idTanaman.isNotEmpty()) null else "ID Tanaman tidak boleh kosong",
+            namaTanaman = if (event.namaTanaman.isNotEmpty()) null else "Nama Tanaman tidak boleh kosong",
+            periodeTanam = if (event.periodeTanam.isNotEmpty()) null else "Periode Tanam tidak boleh kosong",
+            deskripsiTanaman = if (event.deskripsiTanaman.isNotEmpty()) null else "Deskripsi Tanaman tidak boleh kosong"
+        )
+
+        // Update UI state with error state
+        uiState = uiState.copy(formErrorState = errorState)
+
+        return errorState.isValid()
+    }
+}
+
+data class FormErrorState(
+    val idTanaman: String? = null,
+    val namaTanaman: String? = null,
+    val periodeTanam: String? = null,
+    val deskripsiTanaman: String? = null
+) {
+    fun isValid(): Boolean =
+        idTanaman == null &&
+                namaTanaman == null &&
+                periodeTanam == null &&
+                deskripsiTanaman == null
 }
 
 data class InsertTanamanUiState(
-    val insertTanamanUiEvent: InsertTanamanUiEvent = InsertTanamanUiEvent()
+    val insertTanamanUiEvent: InsertTanamanUiEvent = InsertTanamanUiEvent(),
+    val formErrorState: FormErrorState = FormErrorState(),
+    val isSnackbarVisible: Boolean = false,
+    val snackbarMessage: String = ""
 )
 
 data class InsertTanamanUiEvent(
-    val idTanaman: String="",
-    val namaTanaman: String="",
-    val periodeTanam: String="",
-    val deskripsiTanaman: String=""
+    val idTanaman: String = "",
+    val namaTanaman: String = "",
+    val periodeTanam: String = "",
+    val deskripsiTanaman: String = ""
 )
 
-fun InsertTanamanUiEvent.toTnm():Tanaman = Tanaman(
+fun InsertTanamanUiEvent.toTnm(): Tanaman = Tanaman(
     idTanaman = idTanaman,
     namaTanaman = namaTanaman,
     periodeTanam = periodeTanam,
