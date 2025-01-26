@@ -86,14 +86,12 @@ data class UpdateTanamanUiState(
 )
 
 data class UpdateTanamanUiEvent(
-    val idTanaman: String="",
     val namaTanaman: String="",
     val periodeTanam: String="",
     val deskripsiTanaman: String=""
 )
 
 fun UpdateTanamanUiEvent.toTnm(): Tanaman = Tanaman(
-    idTanaman = idTanaman,
     namaTanaman = namaTanaman,
     periodeTanam = periodeTanam,
     deskripsiTanaman = deskripsiTanaman
@@ -104,7 +102,6 @@ fun Tanaman.toUpdateTanamanUiState(): UpdateTanamanUiState = UpdateTanamanUiStat
 )
 
 fun Tanaman.toUpdateTanamanUiEvent(): UpdateTanamanUiEvent = UpdateTanamanUiEvent(
-    idTanaman = idTanaman,
     namaTanaman = namaTanaman,
     periodeTanam = periodeTanam,
     deskripsiTanaman = deskripsiTanaman

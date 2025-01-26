@@ -143,20 +143,6 @@ fun FormInput(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ){
         OutlinedTextField(
-            value = insertTanamanUiEvent.idTanaman,
-            onValueChange = {onValueChange(insertTanamanUiEvent.copy(idTanaman = it))},
-            label = { Text("ID Tanaman") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true,
-            isError = formErrorState.idTanaman != null,
-            supportingText = {
-                formErrorState.idTanaman?.let {
-                    Text(text = it, color = MaterialTheme.colorScheme.error)
-                }
-            }
-        )
-        OutlinedTextField(
             value = insertTanamanUiEvent.namaTanaman,
             onValueChange = {onValueChange(insertTanamanUiEvent.copy(namaTanaman = it))},
             label = { Text("Nama Tanaman") },

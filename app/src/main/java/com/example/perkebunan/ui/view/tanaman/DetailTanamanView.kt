@@ -199,7 +199,7 @@ fun DetailTanamanLayout(
                         .padding(bottom = 8.dp)
                 )
 
-                DetailItem(label = "ID Tanaman :", value = tanaman.idTanaman)
+                DetailItem(label = "ID Tanaman :", value = tanaman.idTanaman.toString())
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
                 DetailItem(label = "Nama Tanaman :", value = tanaman.namaTanaman)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)

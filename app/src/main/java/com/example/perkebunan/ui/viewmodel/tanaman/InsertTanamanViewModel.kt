@@ -51,7 +51,6 @@ class InsertTanamanViewModel(private val tnm: TanamanRepository) : ViewModel() {
     fun validateFields(): Boolean {
         val event = uiState.insertTanamanUiEvent
         val errorState = FormErrorState(
-            idTanaman = if (event.idTanaman.isNotEmpty()) null else "ID Tanaman tidak boleh kosong",
             namaTanaman = if (event.namaTanaman.isNotEmpty()) null else "Nama Tanaman tidak boleh kosong",
             periodeTanam = if (event.periodeTanam.isNotEmpty()) null else "Periode Tanam tidak boleh kosong",
             deskripsiTanaman = if (event.deskripsiTanaman.isNotEmpty()) null else "Deskripsi Tanaman tidak boleh kosong"
@@ -65,14 +64,12 @@ class InsertTanamanViewModel(private val tnm: TanamanRepository) : ViewModel() {
 }
 
 data class FormErrorState(
-    val idTanaman: String? = null,
     val namaTanaman: String? = null,
     val periodeTanam: String? = null,
     val deskripsiTanaman: String? = null
 ) {
     fun isValid(): Boolean =
-        idTanaman == null &&
-                namaTanaman == null &&
+        namaTanaman == null &&
                 periodeTanam == null &&
                 deskripsiTanaman == null
 }
@@ -85,14 +82,12 @@ data class InsertTanamanUiState(
 )
 
 data class InsertTanamanUiEvent(
-    val idTanaman: String = "",
     val namaTanaman: String = "",
     val periodeTanam: String = "",
     val deskripsiTanaman: String = ""
 )
 
 fun InsertTanamanUiEvent.toTnm(): Tanaman = Tanaman(
-    idTanaman = idTanaman,
     namaTanaman = namaTanaman,
     periodeTanam = periodeTanam,
     deskripsiTanaman = deskripsiTanaman
@@ -103,7 +98,6 @@ fun Tanaman.toUiStateTnm(): InsertTanamanUiState = InsertTanamanUiState(
 )
 
 fun Tanaman.toInsertTanamanUiEvent(): InsertTanamanUiEvent = InsertTanamanUiEvent(
-    idTanaman = idTanaman,
     namaTanaman = namaTanaman,
     periodeTanam = periodeTanam,
     deskripsiTanaman = deskripsiTanaman

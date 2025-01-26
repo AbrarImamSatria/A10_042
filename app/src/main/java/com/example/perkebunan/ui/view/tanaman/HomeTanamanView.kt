@@ -121,7 +121,7 @@ fun HomeTanamanScreen(
             DeleteConfirmationDialog(
                 onDeleteConfirm = {
                     selectedTanaman?.let { tanaman ->
-                        viewModel.deleteTnm(tanaman.idTanaman)
+                        viewModel.deleteTnm(tanaman.idTanaman.toString())
                         viewModel.getTnm()
                     }
                     showDeleteDialog = false
@@ -293,7 +293,7 @@ fun HomeTanamanStatus(
 
                     tanaman = homeTanamanUiState.tanaman, modifier = modifier.fillMaxWidth(),
                     onDetailClick = {
-                        onDetailClick(it.idTanaman)
+                        onDetailClick(it.idTanaman.toString())
                     },
                     onDeleteClick = {
                         onDeleteClick(it)
