@@ -126,7 +126,6 @@ data class UpdateAktivitasPertanianUiEvent(
 )
 
 fun UpdateAktivitasPertanianUiEvent.toAkt(): AktivitasPertanian = AktivitasPertanian(
-    idAktivitas = idAktivitas,
     idTanaman = idTanaman,
     idPekerja = idPekerja,
     tanggalAktivitas = tanggalAktivitas,
@@ -138,7 +137,6 @@ fun AktivitasPertanian.toUpdateAktivitasPertanianUiState(): UpdateAktivitasPerta
 )
 
 fun AktivitasPertanian.toUpdateAktivitasPertanianUiEvent(): UpdateAktivitasPertanianUiEvent = UpdateAktivitasPertanianUiEvent(
-    idAktivitas = idAktivitas,
     idTanaman = idTanaman,
     idPekerja = idPekerja,
     tanggalAktivitas = tanggalAktivitas,

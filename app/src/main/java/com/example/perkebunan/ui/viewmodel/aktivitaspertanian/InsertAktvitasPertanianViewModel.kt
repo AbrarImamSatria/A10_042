@@ -76,7 +76,6 @@ class InsertAktivitasPertanianViewModel(
     fun validateFields(): Boolean {
         val event = uiState.insertAktivitasPertanianUiEvent
         val errorState = FormErrorState(
-            idAktivitas = if (event.idAktivitas.isNotEmpty()) null else "ID Aktivitas tidak boleh kosong",
             idTanaman = if (event.idTanaman.isNotEmpty()) null else "Tanaman tidak boleh kosong",
             idPekerja = if (event.idPekerja.isNotEmpty()) null else "Pekerja tidak boleh kosong",
             tanggalAktivitas = if (event.tanggalAktivitas.isNotEmpty()) null else "Tanggal Aktivitas tidak boleh kosong",
@@ -90,15 +89,13 @@ class InsertAktivitasPertanianViewModel(
 }
 
 data class FormErrorState(
-    val idAktivitas: String? = null,
     val idTanaman: String? = null,
     val idPekerja: String? = null,
     val tanggalAktivitas: String? = null,
     val deskripsiAktivitas: String? = null,
 ) {
     fun isValid(): Boolean =
-        idAktivitas == null &&
-                idTanaman == null &&
+        idTanaman == null &&
                 idPekerja == null &&
                 tanggalAktivitas == null &&
                 deskripsiAktivitas == null
@@ -112,7 +109,6 @@ data class InsertAktivitasPertanianUiState(
 )
 
 data class InsertAktivitasPertanianUiEvent(
-    val idAktivitas: String="",
     val idTanaman: String="",
     val idPekerja: String="",
     val tanggalAktivitas: String="",
@@ -120,7 +116,6 @@ data class InsertAktivitasPertanianUiEvent(
 )
 
 fun InsertAktivitasPertanianUiEvent.toAkt(): AktivitasPertanian = AktivitasPertanian(
-    idAktivitas = idAktivitas,
     idTanaman = idTanaman,
     idPekerja = idPekerja,
     tanggalAktivitas = tanggalAktivitas,
@@ -132,7 +127,6 @@ fun AktivitasPertanian.toUiStateAkt(): InsertAktivitasPertanianUiState = InsertA
 )
 
 fun AktivitasPertanian.toInsertAktivitasPertanianUiEvent(): InsertAktivitasPertanianUiEvent = InsertAktivitasPertanianUiEvent(
-    idAktivitas = idAktivitas,
     idTanaman = idTanaman,
     idPekerja = idPekerja,
     tanggalAktivitas = tanggalAktivitas,

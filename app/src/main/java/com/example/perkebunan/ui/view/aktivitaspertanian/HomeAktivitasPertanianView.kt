@@ -110,7 +110,7 @@ fun HomeAktivitasPertanianScreen(
             DeleteConfirmationDialog(
                 onDeleteConfirm = {
                     selectedAktivitasPertanian?.let { aktivitasPertanian ->
-                        viewModel.deleteAkt(aktivitasPertanian.idAktivitas)
+                        viewModel.deleteAkt(aktivitasPertanian.idAktivitas.toString())
                         viewModel.getAkt()
                     }
                     showDeleteDialog = false
@@ -186,7 +186,7 @@ fun HomeAktivitasPertanianStatus(
                 AktLayout(
                     aktivitasPertanian = homeAktivitasPertanianUiState.aktivitasPertanian, modifier = modifier.fillMaxWidth(),
                     onDetailClick = {
-                        onDetailClick(it.idAktivitas)
+                        onDetailClick(it.idAktivitas.toString())
                     },
                     onDeleteClick = {
                         onDeleteClick(it)

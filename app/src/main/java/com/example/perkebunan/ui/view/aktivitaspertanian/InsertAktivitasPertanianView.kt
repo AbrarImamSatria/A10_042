@@ -144,17 +144,6 @@ fun FormInput(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        OutlinedTextField(
-            value = insertAktivitasPertanianUiEvent.idAktivitas,
-            onValueChange = {onValueChange(insertAktivitasPertanianUiEvent.copy(idAktivitas = it))},
-            label = { Text("ID Aktivitas") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true,
-            isError = formErrorState.idAktivitas != null,
-            supportingText = { formErrorState.idAktivitas?.let { Text(text = it, color = MaterialTheme.colorScheme.error) } }
-        )
-
         DynamicSelectTextField(
             selectedValue = insertAktivitasPertanianUiEvent.idTanaman,
             options = viewModel.tanamanList.map { it.namaTanaman },

@@ -172,7 +172,7 @@ fun DetailAktivitasPertanianLayout(
                         .padding(bottom = 8.dp)
                 )
 
-                DetailItem(label = "ID Aktivitas :", value = aktivitasPertanian.idAktivitas)
+                DetailItem(label = "ID Aktivitas :", value = aktivitasPertanian.idAktivitas.toString())
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
                 DetailItem(label = "Nama Tanaman :", value = aktivitasPertanian.idTanaman)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
