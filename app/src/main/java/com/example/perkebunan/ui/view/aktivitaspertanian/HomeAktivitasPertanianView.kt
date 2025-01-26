@@ -39,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -68,56 +67,79 @@ fun HomeAktivitasPertanianScreen(
     onDetailClick: (String) -> Unit = {},
     viewModel: HomeAktivitasPertanianViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var showDeleteDialog by remember { mutableStateOf(false) }
     var selectedAktivitasPertanian by remember { mutableStateOf<AktivitasPertanian?>(null) }
 
     Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CostumeTopAppBar(
                 title = DestinasiHomeAktivitasPertanian.titleRes,
                 canNavigateBack = true,
-                scrollBehavior = scrollBehavior,
                 navigateUp = navigateBack,
-                onRefresh = { viewModel.getAkt() },
+                onRefresh = { viewModel.getAkt() }
             )
-        },
+        }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxSize()
+                .padding(innerPadding)
         ) {
+            item { PemanisSectionAktivitasPertanian() }
 
-            PemanisSectionAktivitasPertanian()
-            DaftarAktivitasPertanianHeader(
-                onTambahAktivitasPertanianClick = navigateToItemEntry
-            )
+            item {
+                DaftarAktivitasPertanianHeader(
+                    onTambahAktivitasPertanianClick = navigateToItemEntry
+                )
+            }
 
-            HomeAktivitasPertanianStatus(
-                homeAktivitasPertanianUiState = viewModel.aktUiState,
-                retryAction = { viewModel.getAkt() },
-                onDetailClick = onDetailClick,
-                onDeleteClick = { aktivitasPertanian ->
-                    selectedAktivitasPertanian = aktivitasPertanian
-                    showDeleteDialog = true
+            when (val state = viewModel.aktUiState) {
+                is HomeAktivitasPertanianUiState.Loading -> {
+                    item { OnLoading() }
                 }
-            )
+                is HomeAktivitasPertanianUiState.Error -> {
+                    item { OnError(retryAction = { viewModel.getAkt() }) }
+                }
+                is HomeAktivitasPertanianUiState.Succes -> {
+                    if (state.aktivitasPertanian.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = "Tidak ada data Aktivitas Pertanian")
+                            }
+                        }
+                    } else {
+                        items(state.aktivitasPertanian) { aktivitas ->
+                            AktCard(
+                                aktivitasPertanian = aktivitas,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .clickable { onDetailClick(aktivitas.idAktivitas.toString()) },
+                                onDeleteClick = {
+                                    selectedAktivitasPertanian = it
+                                    showDeleteDialog = true
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
+                }
+            }
         }
 
         if (showDeleteDialog) {
             DeleteConfirmationDialog(
                 onDeleteConfirm = {
-                    selectedAktivitasPertanian?.let { aktivitasPertanian ->
-                        viewModel.deleteAkt(aktivitasPertanian.idAktivitas.toString())
+                    selectedAktivitasPertanian?.let { aktivitas ->
+                        viewModel.deleteAkt(aktivitas.idAktivitas.toString())
                         viewModel.getAkt()
                     }
                     showDeleteDialog = false
                 },
-                onDeleteCancel = {
-                    showDeleteDialog = false
-                }
+                onDeleteCancel = { showDeleteDialog = false }
             )
         }
     }
@@ -248,7 +270,7 @@ fun DaftarAktivitasPertanianHeader(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp), //
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {

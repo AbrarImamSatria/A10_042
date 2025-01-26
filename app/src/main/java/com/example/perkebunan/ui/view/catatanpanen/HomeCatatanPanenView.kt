@@ -39,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -69,42 +68,67 @@ fun HomeCatatanPanenScreen(
     onDetailClick: (String) -> Unit = {},
     viewModel: HomeCatatanPanenViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var showDeleteDialog by remember { mutableStateOf(false) }
     var selectedCatatanPanen by remember { mutableStateOf<CatatanPanen?>(null) }
 
     Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CostumeTopAppBar(
                 title = DestinasiHomeCatatanPanen.titleRes,
                 canNavigateBack = true,
-                scrollBehavior = scrollBehavior,
                 navigateUp = navigateBack,
-                onRefresh = { viewModel.getCtpn() },
+                onRefresh = { viewModel.getCtpn() }
             )
-        },
+        }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxSize()
+                .padding(innerPadding)
         ) {
+            item { PemanisSectionCatatanPanen() }
 
-            PemanisSectionCatatanPanen()
-            DaftarCatatanPanenHeader(
-                onTambahCatatanPanenClick = navigateToItemEntry
-            )
+            item {
+                DaftarCatatanPanenHeader(
+                    onTambahCatatanPanenClick = navigateToItemEntry
+                )
+            }
 
-            HomeCatatanPanenStatus(
-                homeCatatanPanenUiState = viewModel.ctpnUiState,
-                retryAction = { viewModel.getCtpn() },
-                onDetailClick = onDetailClick,
-                onDeleteClick = { catatanPanen ->
-                    selectedCatatanPanen = catatanPanen
-                    showDeleteDialog = true
+            when (val state = viewModel.ctpnUiState) {
+                is HomeCatatanPanenUiState.Loading -> {
+                    item { OnLoading() }
                 }
-            )
+                is HomeCatatanPanenUiState.Error -> {
+                    item { OnError(retryAction = { viewModel.getCtpn() }) }
+                }
+                is HomeCatatanPanenUiState.Succes -> {
+                    if (state.catatanPanen.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = "Tidak ada data Catatan Panen")
+                            }
+                        }
+                    } else {
+                        items(state.catatanPanen) { catatanPanen ->
+                            CtpnCard(
+                                catatanPanen = catatanPanen,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .clickable { onDetailClick(catatanPanen.idPanen.toString()) },
+                                onDeleteClick = {
+                                    selectedCatatanPanen = it
+                                    showDeleteDialog = true
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
+                }
+            }
         }
 
         if (showDeleteDialog) {
@@ -116,9 +140,7 @@ fun HomeCatatanPanenScreen(
                     }
                     showDeleteDialog = false
                 },
-                onDeleteCancel = {
-                    showDeleteDialog = false
-                }
+                onDeleteCancel = { showDeleteDialog = false }
             )
         }
     }
@@ -248,7 +270,7 @@ fun DaftarCatatanPanenHeader(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp), //
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {

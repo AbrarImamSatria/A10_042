@@ -44,7 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -76,12 +75,10 @@ fun HomeTanamanScreen(
     onDetailClick: (String) -> Unit = {},
     viewModel: HomeTanamanViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var showDeleteDialog by remember { mutableStateOf(false) }
     var selectedTanaman by remember { mutableStateOf<Tanaman?>(null) }
 
     Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CustomTopBar(
                 onNotificationClick = { /* Handle notification click */ },
@@ -89,32 +86,65 @@ fun HomeTanamanScreen(
             )
         },
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            FiturLainnyaSection(
-                navigateToPekerja = navigateToPekerja,
-                navigateToCatatanPanen = navigateToCatatanPanen,
-                navigateToAktivitasPertanian = navigateToAktivitasPertanian,
-                onRefresh = { viewModel.getTnm() },
-            )
-            PemanisSection()
+            item {
+                FiturLainnyaSection(
+                    navigateToPekerja = navigateToPekerja,
+                    navigateToCatatanPanen = navigateToCatatanPanen,
+                    navigateToAktivitasPertanian = navigateToAktivitasPertanian,
+                    onRefresh = { viewModel.getTnm() }
+                )
+            }
 
-            DaftarTanamanHeader(
-                onTambahTanamanClick = navigateToItemEntry
-            )
+            item {
+                PemanisSection()
+            }
 
-            HomeTanamanStatus(
-                homeTanamanUiState = viewModel.tnmUiState,
-                retryAction = { viewModel.getTnm() },
-                onDetailClick = onDetailClick,
-                onDeleteClick = { tanaman ->
-                    selectedTanaman = tanaman
-                    showDeleteDialog = true
+            item {
+                DaftarTanamanHeader(
+                    onTambahTanamanClick = navigateToItemEntry
+                )
+            }
+
+            when (val state = viewModel.tnmUiState) {
+                is HomeTanamanUiState.Loading -> {
+                    item { OnLoading() }
                 }
-            )
+                is HomeTanamanUiState.Error -> {
+                    item { OnError(retryAction = { viewModel.getTnm() }) }
+                }
+                is HomeTanamanUiState.Succes -> {
+                    if (state.tanaman.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = "Tidak ada data Tanaman")
+                            }
+                        }
+                    } else {
+                        items(state.tanaman) { tanaman ->
+                            TnmCard(
+                                tanaman = tanaman,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .clickable { onDetailClick(tanaman.idTanaman.toString()) },
+                                onDeleteClick = {
+                                    selectedTanaman = it
+                                    showDeleteDialog = true
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
+                }
+            }
         }
 
         if (showDeleteDialog) {
@@ -133,7 +163,6 @@ fun HomeTanamanScreen(
         }
     }
 }
-
 
 
 @Composable
@@ -352,7 +381,7 @@ fun DaftarTanamanHeader(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp), //
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {

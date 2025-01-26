@@ -21,7 +21,6 @@ import com.example.perkebunan.R
 @Composable
 fun CustomTopBar(
     modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
     onNotificationClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
