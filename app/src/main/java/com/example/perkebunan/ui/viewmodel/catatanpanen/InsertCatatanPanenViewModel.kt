@@ -68,7 +68,6 @@ class InsertCatatanPanenViewModel(
     fun validateFields(): Boolean {
         val event = uiState.insertCatatanPanenUiEvent
         val errorState = FormErrorState(
-            idPanen = if (event.idPanen.isNotEmpty()) null else "ID Panen tidak boleh kosong",
             idTanaman = if (event.idTanaman.isNotEmpty()) null else "Tanaman tidak boleh kosong",
             tanggalPanen = if (event.tanggalPanen.isNotEmpty()) null else "Tanggal Panen tidak boleh kosong",
             jumlahPanen = if (event.jumlahPanen.isNotEmpty()) null else "Jumlah Panen tidak boleh kosong",
@@ -83,15 +82,13 @@ class InsertCatatanPanenViewModel(
 }
 
 data class FormErrorState(
-    val idPanen: String? = null,
     val idTanaman: String? = null,
     val tanggalPanen: String? = null,
     val jumlahPanen: String? = null,
     val keterangan: String? = null
 ) {
     fun isValid(): Boolean =
-        idPanen == null &&
-                idTanaman == null &&
+        idTanaman == null &&
                 tanggalPanen == null &&
                 jumlahPanen == null &&
                 keterangan == null
@@ -105,7 +102,6 @@ data class InsertCatatanPanenUiState(
 )
 
 data class InsertCatatanPanenUiEvent(
-    val idPanen: String="",
     val idTanaman: String="",
     val tanggalPanen: String="",
     val jumlahPanen: String="",
@@ -113,7 +109,6 @@ data class InsertCatatanPanenUiEvent(
 )
 
 fun InsertCatatanPanenUiEvent.toCtpn(): CatatanPanen = CatatanPanen(
-    idPanen = idPanen,
     idTanaman = idTanaman,
     tanggalPanen = tanggalPanen,
     jumlahPanen = jumlahPanen,
@@ -125,7 +120,6 @@ fun CatatanPanen.toUiStateCtpn(): InsertCatatanPanenUiState = InsertCatatanPanen
 )
 
 fun CatatanPanen.toInsertCatatanPanenUiEvent(): InsertCatatanPanenUiEvent = InsertCatatanPanenUiEvent(
-    idPanen = idPanen,
     idTanaman = idTanaman,
     tanggalPanen = tanggalPanen,
     jumlahPanen = jumlahPanen,

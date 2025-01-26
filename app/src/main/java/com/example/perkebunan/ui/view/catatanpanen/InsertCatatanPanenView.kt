@@ -147,21 +147,6 @@ fun FormInput(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        OutlinedTextField(
-            value = insertCatatanPanenUiEvent.idPanen,
-            onValueChange = { onValueChange(insertCatatanPanenUiEvent.copy(idPanen = it)) },
-            label = { Text("ID Panen") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true,
-            isError = formErrorState.idPanen != null,
-            supportingText = {
-                formErrorState.idPanen?.let {
-                    Text(text = it, color = MaterialTheme.colorScheme.error)
-                }
-            }
-        )
-
         DynamicSelectTextField(
             selectedValue = insertCatatanPanenUiEvent.idTanaman,
             options = viewModel.tanamanList.map { it.namaTanaman },

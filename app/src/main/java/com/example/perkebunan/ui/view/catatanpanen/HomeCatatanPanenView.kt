@@ -111,7 +111,7 @@ fun HomeCatatanPanenScreen(
             DeleteConfirmationDialog(
                 onDeleteConfirm = {
                     selectedCatatanPanen?.let { catatanPanen ->
-                        viewModel.deleteCtpn(catatanPanen.idPanen)
+                        viewModel.deleteCtpn(catatanPanen.idPanen.toString())
                         viewModel.getCtpn()
                     }
                     showDeleteDialog = false
@@ -186,7 +186,7 @@ fun HomeCatatanPanenStatus(
 
                     catatanPanen = homeCatatanPanenUiState.catatanPanen, modifier = modifier.fillMaxWidth(),
                     onDetailClick = {
-                        onDetailClick(it.idPanen)
+                        onDetailClick(it.idPanen.toString())
                     },
                     onDeleteClick = {
                         onDeleteClick(it)

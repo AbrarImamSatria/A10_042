@@ -114,7 +114,6 @@ data class UpdateCatatanPanenUiEvent(
 )
 
 fun UpdateCatatanPanenUiEvent.toCtpn(): CatatanPanen = CatatanPanen(
-    idPanen = idPanen,
     idTanaman = idTanaman,
     tanggalPanen = tanggalPanen,
     jumlahPanen = jumlahPanen,
@@ -126,7 +125,6 @@ fun CatatanPanen.toUpdateCatatanPanenUiState(): UpdateCatatanPanenUiState = Upda
 )
 
 fun CatatanPanen.toUpdateCatatanPanenUiEvent(): UpdateCatatanPanenUiEvent = UpdateCatatanPanenUiEvent(
-    idPanen = idPanen,
     idTanaman = idTanaman,
     tanggalPanen = tanggalPanen,
     jumlahPanen = jumlahPanen,
