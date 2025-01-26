@@ -184,6 +184,12 @@ fun FormInput(
                 }
             }
         )
+        if (enabled){
+            Text(
+                text = "Isi Semua Data!",
+                modifier = Modifier.padding(12.dp)
+            )
+        }
         Divider(
             thickness = 8.dp,
             modifier = Modifier.padding((12.dp))
