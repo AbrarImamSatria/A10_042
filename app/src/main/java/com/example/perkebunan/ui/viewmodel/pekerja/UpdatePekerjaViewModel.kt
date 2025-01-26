@@ -93,7 +93,6 @@ data class UpdatePekerjaUiEvent(
 )
 
 fun UpdatePekerjaUiEvent.toPkj(): Pekerja = Pekerja(
-    idPekerja = idPekerja,
     namaPekerja = namaPekerja,
     jabatan = jabatan,
     kontakPekerja = kontakPekerja
@@ -104,7 +103,6 @@ fun Pekerja.toUpdatePekerjaUiState(): UpdatePekerjaUiState = UpdatePekerjaUiStat
 )
 
 fun Pekerja.toUpdatePekerjaUiEvent(): UpdatePekerjaUiEvent = UpdatePekerjaUiEvent(
-    idPekerja = idPekerja,
     namaPekerja = namaPekerja,
     jabatan = jabatan,
     kontakPekerja = kontakPekerja

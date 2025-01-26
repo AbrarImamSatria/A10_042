@@ -110,7 +110,7 @@ fun HomePekerjaScreen(
             DeleteConfirmationDialog(
                 onDeleteConfirm = {
                     selectedPekerja?.let { pekerja ->
-                        viewModel.deletePkj(pekerja.idPekerja)
+                        viewModel.deletePkj(pekerja.idPekerja.toString())
                         viewModel.getPkj()
                     }
                     showDeleteDialog = false
@@ -185,7 +185,7 @@ fun HomePekerjaStatus(
 
                     pekerja = homePekerjaUiState.pekerja, modifier = modifier.fillMaxWidth(),
                     onDetailClick = {
-                        onDetailClick(it.idPekerja)
+                        onDetailClick(it.idPekerja.toString())
                     },
                     onDeleteClick = {
                         onDeleteClick(it)

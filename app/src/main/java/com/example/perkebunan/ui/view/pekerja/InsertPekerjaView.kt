@@ -143,20 +143,6 @@ fun FormInput(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         OutlinedTextField(
-            value = insertPekerjaUiEvent.idPekerja,
-            onValueChange = { onValueChange(insertPekerjaUiEvent.copy(idPekerja = it)) },
-            label = { Text("ID Pekerja") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true,
-            isError = formErrorState.idPekerja != null,
-            supportingText = {
-                formErrorState.idPekerja?.let {
-                    Text(text = it, color = MaterialTheme.colorScheme.error)
-                }
-            }
-        )
-        OutlinedTextField(
             value = insertPekerjaUiEvent.namaPekerja,
             onValueChange = { onValueChange(insertPekerjaUiEvent.copy(namaPekerja = it)) },
             label = { Text("Nama Pekerja") },

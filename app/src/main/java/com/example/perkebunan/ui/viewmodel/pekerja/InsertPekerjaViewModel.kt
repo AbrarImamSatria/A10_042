@@ -51,7 +51,6 @@ class InsertPekerjaViewModel(private val pkj: PekerjaRepository) : ViewModel() {
     fun validateFields(): Boolean {
         val event = uiState.insertPekerjaUiEvent
         val errorState = FormErrorState(
-            idPekerja = if (event.idPekerja.isNotEmpty()) null else "ID Pekerja tidak boleh kosong",
             namaPekerja = if (event.namaPekerja.isNotEmpty()) null else "Nama Pekerja tidak boleh kosong",
             jabatan = if (event.jabatan.isNotEmpty()) null else "Jabatan tidak boleh kosong",
             kontakPekerja = if (event.kontakPekerja.isNotEmpty()) null else "Kontak Pekerja tidak boleh kosong"
@@ -65,14 +64,12 @@ class InsertPekerjaViewModel(private val pkj: PekerjaRepository) : ViewModel() {
 }
 
 data class FormErrorState(
-    val idPekerja: String? = null,
     val namaPekerja: String? = null,
     val jabatan: String? = null,
     val kontakPekerja: String? = null
 ) {
     fun isValid(): Boolean =
-        idPekerja == null &&
-                namaPekerja == null &&
+        namaPekerja == null &&
                 jabatan == null &&
                 kontakPekerja == null
 }
@@ -85,14 +82,12 @@ data class InsertPekerjaUiState(
 )
 
 data class InsertPekerjaUiEvent(
-    val idPekerja: String="",
     val namaPekerja: String="",
     val jabatan: String="",
     val kontakPekerja: String=""
 )
 
 fun InsertPekerjaUiEvent.toPkj(): Pekerja = Pekerja(
-    idPekerja = idPekerja,
     namaPekerja = namaPekerja,
     jabatan = jabatan,
     kontakPekerja = kontakPekerja
@@ -103,7 +98,6 @@ fun Pekerja.toUiStatePkj(): InsertPekerjaUiState = InsertPekerjaUiState(
 )
 
 fun Pekerja.toInsertPekerjaUiEvent(): InsertPekerjaUiEvent = InsertPekerjaUiEvent(
-    idPekerja = idPekerja,
     namaPekerja = namaPekerja,
     jabatan = jabatan,
     kontakPekerja = kontakPekerja

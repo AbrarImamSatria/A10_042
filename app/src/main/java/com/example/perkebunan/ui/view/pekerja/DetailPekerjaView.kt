@@ -172,7 +172,7 @@ fun DetailPekerjaLayout(
                         .padding(bottom = 8.dp)
                 )
 
-                DetailItem(label = "ID Pekerja :", value = pekerja.idPekerja)
+                DetailItem(label = "ID Pekerja :", value = pekerja.idPekerja.toString())
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
                 DetailItem(label = "Nama Pekerja :", value = pekerja.namaPekerja)
                 Divider(color = MaterialTheme.colorScheme.surfaceVariant)
