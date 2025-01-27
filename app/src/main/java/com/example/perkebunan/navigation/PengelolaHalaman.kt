@@ -36,18 +36,25 @@ import com.example.perkebunan.ui.view.tanaman.DestinasiDetailTanaman
 import com.example.perkebunan.ui.view.tanaman.DestinasiEditTanaman
 import com.example.perkebunan.ui.view.tanaman.DestinasiEntryTanaman
 import com.example.perkebunan.ui.view.tanaman.DestinasiHomeTanaman
+import com.example.perkebunan.ui.view.tanaman.DestinasiWelcomeScreen
 import com.example.perkebunan.ui.view.tanaman.DetailScreenTanaman
 import com.example.perkebunan.ui.view.tanaman.EditScreenTanaman
 import com.example.perkebunan.ui.view.tanaman.EntryTnmScreen
 import com.example.perkebunan.ui.view.tanaman.HomeTanamanScreen
+import com.example.perkebunan.ui.view.tanaman.WelcomeScreen
 
 @Composable
 fun PengelolaHalaman(navController: NavHostController = rememberNavController()) {
     NavHost(
         navController = navController,
-        startDestination = DestinasiHomeTanaman.route,
+        startDestination = DestinasiWelcomeScreen.route,
         modifier = Modifier
     ) {
+
+        composable(DestinasiWelcomeScreen.route) {
+            WelcomeScreen(navController = navController)
+        }
+
         // RUTE UNTUK TANAMAN
         composable(DestinasiHomeTanaman.route) {
             HomeTanamanScreen(
