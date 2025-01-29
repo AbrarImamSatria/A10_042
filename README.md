@@ -1,4 +1,4 @@
-![validasi hapus data 9 januari 2025](https://github.com/user-attachments/assets/bdac6429-6719-40d6-a067-d889e74c72bf)![tampilan detail data yang diperbarui](https://github.com/user-attachments/assets/597015ce-749e-46f0-8345-ecdf92ac467d)# Tampilan Home Aplikasi dan Home Tanaman
+# Tampilan Home Aplikasi dan Home Tanaman
 ## Tampilan halaman home aplikasi dan tanaman
 ![Tampilan halaman home aplikasi dan tanaman](https://github.com/user-attachments/assets/c4be3fe2-b217-4106-ab81-b82826709968)
 ## Validasi tambah tanaman
